@@ -5,7 +5,8 @@
 import pytest
 
 import salt.states.zabbix_valuemap as zabbix_valuemap
-from tests.support.mock import MagicMock, patch
+import saltext.saltext_zabbix.states.zabbix_valuemap as zabbix_valuemap
+from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture

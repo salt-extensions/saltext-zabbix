@@ -6,9 +6,9 @@
 import pytest
 
 import salt.modules.config as config
-import salt.modules.zabbix as zabbix
+import saltext.saltext_zabbix.modules.zabbix as zabbix
 from salt.exceptions import SaltException
-from tests.support.mock import patch
+from unittest.mock import patch
 
 GETID_QUERY_RESULT_OK = [
     {"internal": "0", "flags": "0", "groupid": "11", "name": "Databases"}

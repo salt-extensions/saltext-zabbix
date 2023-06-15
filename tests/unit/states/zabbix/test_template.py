@@ -4,8 +4,8 @@
 
 import pytest
 
-import salt.states.zabbix_template as zabbix_template
-from tests.support.mock import MagicMock, patch
+import saltext.saltext_zabbix.states.zabbix_template as zabbix_template
+from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture
