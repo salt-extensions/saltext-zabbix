@@ -1,6 +1,6 @@
 # saltext-zabbix
 
-Salt Extension Modules for interacting with AWS via the Boto libraries
+Salt Extension Modules for interacting with Zabbix
 
 ## Quickstart
 
