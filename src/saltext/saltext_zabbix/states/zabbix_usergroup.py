@@ -50,14 +50,14 @@ def present(name, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_usergroup_created = "User group {} created.".format(name)
-    comment_usergroup_updated = "User group {} updated.".format(name)
-    comment_usergroup_notcreated = "Unable to create user group: {}. ".format(name)
-    comment_usergroup_exists = "User group {} already exists.".format(name)
+    comment_usergroup_created = f"User group {name} created."
+    comment_usergroup_updated = f"User group {name} updated."
+    comment_usergroup_notcreated = f"Unable to create user group: {name}. "
+    comment_usergroup_exists = f"User group {name} already exists."
     changes_usergroup_created = {
         name: {
-            "old": "User group {} does not exist.".format(name),
-            "new": "User group {} created.".format(name),
+            "old": f"User group {name} does not exist.",
+            "new": f"User group {name} created.",
         }
     }
 
@@ -102,12 +102,7 @@ def present(name, **kwargs):
     # Dry run, test=true mode
     if __opts__["test"]:
         if usergroup_exists:
-            if (
-                update_debug_mode
-                or update_gui_access
-                or update_rights
-                or update_users_status
-            ):
+            if update_debug_mode or update_gui_access or update_rights or update_users_status:
                 ret["result"] = None
                 ret["comment"] = comment_usergroup_updated
             else:
@@ -121,12 +116,7 @@ def present(name, **kwargs):
     error = []
 
     if usergroup_exists:
-        if (
-            update_debug_mode
-            or update_gui_access
-            or update_rights
-            or update_users_status
-        ):
+        if update_debug_mode or update_gui_access or update_rights or update_users_status:
             ret["result"] = True
             ret["comment"] = comment_usergroup_updated
 
@@ -178,9 +168,7 @@ def present(name, **kwargs):
             ret["changes"] = changes_usergroup_created
         else:
             ret["result"] = False
-            ret["comment"] = comment_usergroup_notcreated + str(
-                usergroup_create["error"]
-            )
+            ret["comment"] = comment_usergroup_notcreated + str(usergroup_create["error"])
 
     # error detected
     if error:
@@ -219,13 +207,13 @@ def absent(name, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_usergroup_deleted = "User group {} deleted.".format(name)
-    comment_usergroup_notdeleted = "Unable to delete user group: {}. ".format(name)
-    comment_usergroup_notexists = "User group {} does not exist.".format(name)
+    comment_usergroup_deleted = f"User group {name} deleted."
+    comment_usergroup_notdeleted = f"Unable to delete user group: {name}. "
+    comment_usergroup_notexists = f"User group {name} does not exist."
     changes_usergroup_deleted = {
         name: {
-            "old": "User group {} exists.".format(name),
-            "new": "User group {} deleted.".format(name),
+            "old": f"User group {name} exists.",
+            "new": f"User group {name} deleted.",
         }
     }
 
@@ -249,9 +237,7 @@ def absent(name, **kwargs):
     else:
         try:
             usrgrpid = usergroup_get[0]["usrgrpid"]
-            usergroup_delete = __salt__["zabbix.usergroup_delete"](
-                usrgrpid, **connection_args
-            )
+            usergroup_delete = __salt__["zabbix.usergroup_delete"](usrgrpid, **connection_args)
         except KeyError:
             usergroup_delete = False
 
@@ -261,8 +247,6 @@ def absent(name, **kwargs):
             ret["changes"] = changes_usergroup_deleted
         else:
             ret["result"] = False
-            ret["comment"] = comment_usergroup_notdeleted + str(
-                usergroup_delete["error"]
-            )
+            ret["comment"] = comment_usergroup_notdeleted + str(usergroup_delete["error"])
 
     return ret

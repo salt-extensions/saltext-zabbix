@@ -1,11 +1,11 @@
 """
     :codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
 """
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
-
 import saltext.saltext_zabbix.states.zabbix_template as zabbix_template
-from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture
@@ -166,23 +166,17 @@ def test_present_create(substitute_params_create):
                     "zabbix.get_zabbix_id_mapper": MagicMock(
                         return_value={"template": "templateid"}
                     ),
-                    "zabbix.substitute_params": MagicMock(
-                        side_effect=substitute_params_create
-                    ),
+                    "zabbix.substitute_params": MagicMock(side_effect=substitute_params_create),
                     "zabbix.run_query": MagicMock(side_effect=side_effect_run_query),
                     "zabbix.compare_params": MagicMock(return_value={}),
                 },
             ):
                 ret["result"] = True
-                ret["comment"] = 'Zabbix Template "{}" created.'.format(name)
+                ret["comment"] = f'Zabbix Template "{name}" created.'
                 ret["changes"] = {
                     name: {
-                        "old": 'Zabbix Template "{}" did not exist.'.format(name),
-                        "new": (
-                            'Zabbix Template "{}" created according definition.'.format(
-                                name
-                            )
-                        ),
+                        "old": f'Zabbix Template "{name}" did not exist.',
+                        "new": (f'Zabbix Template "{name}" created according definition.'),
                     }
                 }
                 assert zabbix_template.present(name, {}) == ret
@@ -212,19 +206,14 @@ def test_present_exists(existing_obj, substitute_params_exists):
                     "zabbix.get_zabbix_id_mapper": MagicMock(
                         return_value={"template": "templateid"}
                     ),
-                    "zabbix.substitute_params": MagicMock(
-                        side_effect=substitute_params_exists
-                    ),
+                    "zabbix.substitute_params": MagicMock(side_effect=substitute_params_exists),
                     "zabbix.run_query": MagicMock(side_effect=side_effect_run_query),
-                    "zabbix.compare_params": MagicMock(
-                        return_value={"new": {}, "old": {}}
-                    ),
+                    "zabbix.compare_params": MagicMock(return_value={"new": {}, "old": {}}),
                 },
             ):
                 ret["result"] = True
                 ret["comment"] = (
-                    'Zabbix Template "{}" already exists and corresponds to a'
-                    " definition.".format(name)
+                    f'Zabbix Template "{name}" already exists and corresponds to a' " definition."
                 )
                 assert zabbix_template.present(name, {}) == ret
 
@@ -253,23 +242,17 @@ def test_present_update(diff_params, substitute_params_update):
                     "zabbix.get_zabbix_id_mapper": MagicMock(
                         return_value={"template": "templateid"}
                     ),
-                    "zabbix.substitute_params": MagicMock(
-                        side_effect=substitute_params_update
-                    ),
+                    "zabbix.substitute_params": MagicMock(side_effect=substitute_params_update),
                     "zabbix.run_query": MagicMock(side_effect=side_effect_run_query),
                     "zabbix.compare_params": MagicMock(return_value=diff_params),
                 },
             ):
                 ret["result"] = True
-                ret["comment"] = 'Zabbix Template "{}" updated.'.format(name)
+                ret["comment"] = f'Zabbix Template "{name}" updated.'
                 ret["changes"] = {
                     name: {
-                        "old": 'Zabbix Template "{}" differed.'.format(name),
-                        "new": (
-                            'Zabbix Template "{}" updated according definition.'.format(
-                                name
-                            )
-                        ),
+                        "old": f'Zabbix Template "{name}" differed.',
+                        "new": (f'Zabbix Template "{name}" updated according definition.'),
                     }
                 }
                 assert zabbix_template.present(name, {}) == ret
@@ -287,11 +270,11 @@ def test_absent_test_mode():
             {"zabbix.get_object_id_by_params": MagicMock(return_value=11)},
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Template "{}" would be deleted.'.format(name)
+            ret["comment"] = f'Zabbix Template "{name}" would be deleted.'
             ret["changes"] = {
                 name: {
-                    "old": 'Zabbix Template "{}" exists.'.format(name),
-                    "new": 'Zabbix Template "{}" would be deleted.'.format(name),
+                    "old": f'Zabbix Template "{name}" exists.',
+                    "new": f'Zabbix Template "{name}" would be deleted.',
                 }
             }
             assert zabbix_template.absent(name) == ret
@@ -309,7 +292,7 @@ def test_absent():
             {"zabbix.get_object_id_by_params": MagicMock(return_value=False)},
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Template "{}" does not exist.'.format(name)
+            ret["comment"] = f'Zabbix Template "{name}" does not exist.'
             assert zabbix_template.absent(name) == ret
 
         with patch.dict(
@@ -321,11 +304,11 @@ def test_absent():
                 {"zabbix.run_query": MagicMock(return_value=True)},
             ):
                 ret["result"] = True
-                ret["comment"] = 'Zabbix Template "{}" deleted.'.format(name)
+                ret["comment"] = f'Zabbix Template "{name}" deleted.'
                 ret["changes"] = {
                     name: {
-                        "old": 'Zabbix Template "{}" existed.'.format(name),
-                        "new": 'Zabbix Template "{}" deleted.'.format(name),
+                        "old": f'Zabbix Template "{name}" existed.',
+                        "new": f'Zabbix Template "{name}" deleted.',
                     }
                 }
                 assert zabbix_template.absent(name) == ret

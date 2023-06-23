@@ -5,7 +5,6 @@ Management of Zabbix Action object over Zabbix API.
 
 :codeauthor: Jakub Sliva <jakub.sliva@ultimum.io>
 """
-
 import json
 import logging
 
@@ -116,9 +115,7 @@ def present(name, params, **kwargs):
         )
 
         if diff_params:
-            diff_params[zabbix_id_mapper["action"]] = existing_obj[
-                zabbix_id_mapper["action"]
-            ]
+            diff_params[zabbix_id_mapper["action"]] = existing_obj[zabbix_id_mapper["action"]]
             # diff_params['name'] = 'VMs' - BUG - https://support.zabbix.com/browse/ZBX-12078
             log.info(
                 "Zabbix Action: update params: %s",
@@ -134,17 +131,11 @@ def present(name, params, **kwargs):
                             'Zabbix Action "{}" differs '
                             "in following parameters: {}".format(name, diff_params)
                         ),
-                        "new": (
-                            'Zabbix Action "{}" would correspond to definition.'.format(
-                                name
-                            )
-                        ),
+                        "new": (f'Zabbix Action "{name}" would correspond to definition.'),
                     }
                 }
             else:
-                action_update = __salt__["zabbix.run_query"](
-                    "action.update", diff_params, **kwargs
-                )
+                action_update = __salt__["zabbix.run_query"]("action.update", diff_params, **kwargs)
                 log.info(
                     "Zabbix Action: action.update result: %s",
                     str(action_update),
@@ -166,9 +157,7 @@ def present(name, params, **kwargs):
             ret["result"] = True
             ret[
                 "comment"
-            ] = 'Zabbix Action "{}" already exists and corresponds to a definition.'.format(
-                name
-            )
+            ] = f'Zabbix Action "{name}" already exists and corresponds to a definition.'
 
     else:
         if dry_run:
@@ -177,18 +166,12 @@ def present(name, params, **kwargs):
             ret["changes"] = {
                 name: {
                     "old": f'Zabbix Action "{name}" does not exist.',
-                    "new": (
-                        'Zabbix Action "{}" would be created according definition.'.format(
-                            name
-                        )
-                    ),
+                    "new": (f'Zabbix Action "{name}" would be created according definition.'),
                 }
             }
         else:
             # ACTION.CREATE
-            action_create = __salt__["zabbix.run_query"](
-                "action.create", input_params, **kwargs
-            )
+            action_create = __salt__["zabbix.run_query"]("action.create", input_params, **kwargs)
             log.info("Zabbix Action: action.create result: %s", str(action_create))
 
             if action_create:
@@ -197,11 +180,7 @@ def present(name, params, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Action "{name}" did not exist.',
-                        "new": (
-                            'Zabbix Action "{}" created according definition.'.format(
-                                name
-                            )
-                        ),
+                        "new": (f'Zabbix Action "{name}" created according definition.'),
                     }
                 }
 
@@ -247,9 +226,7 @@ def absent(name, **kwargs):
                 }
             }
         else:
-            action_delete = __salt__["zabbix.run_query"](
-                "action.delete", [object_id], **kwargs
-            )
+            action_delete = __salt__["zabbix.run_query"]("action.delete", [object_id], **kwargs)
 
             if action_delete:
                 ret["result"] = True

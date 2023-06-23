@@ -1,14 +1,13 @@
 """
     :codeauthor: Piter Punk <piterpunk@slackware.com>
 """
-
 import ast
 from collections import OrderedDict
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
-
 import saltext.saltext_zabbix.states.zabbix_host as zabbix_host
-from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture
@@ -622,10 +621,7 @@ def test_create_a_new_host_with_inventory_as_a_list(basic_host_configuration):
             "zabbix.host_create": mock_host_create,
         },
     ):
-        assert (
-            zabbix_host.present(host, groups, interfaces, inventory=inventory, **kwargs)
-            == ret
-        )
+        assert zabbix_host.present(host, groups, interfaces, inventory=inventory, **kwargs) == ret
         mock_host_create.assert_called_with(
             "new_host",
             [16],
@@ -676,10 +672,7 @@ def test_create_a_new_host_with_inventory_as_a_dict(basic_host_configuration):
             "zabbix.host_create": mock_host_create,
         },
     ):
-        assert (
-            zabbix_host.present(host, groups, interfaces, inventory=inventory, **kwargs)
-            == ret
-        )
+        assert zabbix_host.present(host, groups, interfaces, inventory=inventory, **kwargs) == ret
         mock_host_create.assert_called_with(
             "new_host",
             [16],
@@ -862,9 +855,7 @@ def test_to_add_new_groups_to_a_host(basic_host_configuration, existing_host_res
         )
 
 
-def test_update_an_existent_host_proxy(
-    basic_host_configuration, existing_host_responses
-):
+def test_update_an_existent_host_proxy(basic_host_configuration, existing_host_responses):
     """
     Tests if the proxy of a host is updated to a new one.
     This also tests if a proxy can be added, as a host without a proxy
@@ -940,9 +931,7 @@ def test_update_a_host_with_additional_parameters(
     host_update_output = "31337"
 
     ret = {
-        "changes": {
-            "host": "{'description': 'An amazing test host entry', 'inventory_mode': 0}"
-        },
+        "changes": {"host": "{'description': 'An amazing test host entry', 'inventory_mode': 0}"},
         "comment": "Host new_host updated.",
         "name": "new_host",
         "result": True,
@@ -1044,9 +1033,7 @@ def test_update_a_hostinterface(basic_host_configuration, existing_host_response
     ):
         # Blame Python 3.5 support for all this black magic
         host_present_ret = zabbix_host.present(host, groups, interfaces, **kwargs)
-        host_present_changes = ast.literal_eval(
-            host_present_ret["changes"]["interfaces"]
-        )
+        host_present_changes = ast.literal_eval(host_present_ret["changes"]["interfaces"])
         assert host_present_changes == ast.literal_eval(ret["changes"]["interfaces"])
         assert host_present_ret["comment"] == "Host new_host updated."
         assert host_present_ret["name"] == "new_host"
@@ -1237,9 +1224,7 @@ def test_update_inventory_values(basic_host_configuration, existing_host_respons
         host_present_ret = zabbix_host.present(
             host, groups, interfaces, inventory=inventory, **kwargs
         )
-        host_present_changes = ast.literal_eval(
-            host_present_ret["changes"]["inventory"]
-        )
+        host_present_changes = ast.literal_eval(host_present_ret["changes"]["inventory"])
         assert host_present_changes == ast.literal_eval(ret["changes"]["inventory"])
         assert host_present_ret["comment"] == "Host new_host updated."
         assert host_present_ret["name"] == "new_host"
@@ -1288,9 +1273,7 @@ def test_update_inventory_keys(basic_host_configuration, existing_host_responses
         {"serialno_a": "123751236JJ123K"},
     )
     ret = {
-        "changes": {
-            "inventory": "{'vendor': 'TrueVendor', 'serialno_a': '123751236JJ123K'}"
-        },
+        "changes": {"inventory": "{'vendor': 'TrueVendor', 'serialno_a': '123751236JJ123K'}"},
         "comment": "Host new_host updated.",
         "name": "new_host",
         "result": True,
@@ -1317,9 +1300,7 @@ def test_update_inventory_keys(basic_host_configuration, existing_host_responses
         host_present_ret = zabbix_host.present(
             host, groups, interfaces, inventory=inventory, **kwargs
         )
-        host_present_changes = ast.literal_eval(
-            host_present_ret["changes"]["inventory"]
-        )
+        host_present_changes = ast.literal_eval(host_present_ret["changes"]["inventory"])
         assert host_present_changes == ast.literal_eval(ret["changes"]["inventory"])
         assert host_present_ret["comment"] == "Host new_host updated."
         assert host_present_ret["name"] == "new_host"
@@ -1392,16 +1373,9 @@ def test_update_inventory_values_without_clear_existing_data(
     ):
         # Blame Python 3.5 support for all this black magic
         host_present_ret = zabbix_host.present(
-            host,
-            groups,
-            interfaces,
-            inventory=inventory,
-            inventory_clean=False,
-            **kwargs
+            host, groups, interfaces, inventory=inventory, inventory_clean=False, **kwargs
         )
-        host_present_changes = ast.literal_eval(
-            host_present_ret["changes"]["inventory"]
-        )
+        host_present_changes = ast.literal_eval(host_present_ret["changes"]["inventory"])
         assert host_present_changes == ast.literal_eval(ret["changes"]["inventory"])
         assert host_present_ret["comment"] == "Host new_host updated."
         assert host_present_ret["name"] == "new_host"
@@ -1478,9 +1452,7 @@ def test_ensure_nothing_happens_when_inventory_is_not_sent(
         },
     ):
         assert zabbix_host.present(host, groups, interfaces, **kwargs) == ret
-        assert (
-            not mock_host_inventory_set.called
-        ), "host_inventory_set should not be called"
+        assert not mock_host_inventory_set.called, "host_inventory_set should not be called"
 
 
 def test_ensure_that_inventory_is_not_sent_when_inventory_disabled(
@@ -1529,13 +1501,8 @@ def test_ensure_that_inventory_is_not_sent_when_inventory_disabled(
             "zabbix.host_inventory_set": mock_host_inventory_set,
         },
     ):
-        assert (
-            zabbix_host.present(host, groups, interfaces, inventory=inventory, **kwargs)
-            == ret
-        )
-        assert (
-            not mock_host_inventory_set.called
-        ), "host_inventory_set should not be called"
+        assert zabbix_host.present(host, groups, interfaces, inventory=inventory, **kwargs) == ret
+        assert not mock_host_inventory_set.called, "host_inventory_set should not be called"
 
 
 def test_update_inventory_and_restore_inventory_mode(
@@ -1598,9 +1565,7 @@ def test_update_inventory_and_restore_inventory_mode(
         host_present_ret = zabbix_host.present(
             host, groups, interfaces, inventory=inventory, **kwargs
         )
-        host_present_changes = ast.literal_eval(
-            host_present_ret["changes"]["inventory"]
-        )
+        host_present_changes = ast.literal_eval(host_present_ret["changes"]["inventory"])
         assert host_present_changes == ast.literal_eval(ret["changes"]["inventory"])
         assert host_present_ret["comment"] == "Host new_host updated."
         assert host_present_ret["name"] == "new_host"
@@ -1676,16 +1641,9 @@ def test_clear_inventory_value_sending_an_empty_key(
     ):
         # Blame Python 3.5 support for all this black magic
         host_present_ret = zabbix_host.present(
-            host,
-            groups,
-            interfaces,
-            inventory=inventory,
-            inventory_clean=False,
-            **kwargs
+            host, groups, interfaces, inventory=inventory, inventory_clean=False, **kwargs
         )
-        host_present_changes = ast.literal_eval(
-            host_present_ret["changes"]["inventory"]
-        )
+        host_present_changes = ast.literal_eval(host_present_ret["changes"]["inventory"])
         assert host_present_changes == ast.literal_eval(ret["changes"]["inventory"])
         assert host_present_ret["comment"] == "Host new_host updated."
         assert host_present_ret["name"] == "new_host"

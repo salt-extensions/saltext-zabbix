@@ -1,11 +1,11 @@
 """
     :codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
 """
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
-
 import saltext.saltext_zabbix.states.zabbix_action as zabbix_action
-from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture
@@ -14,9 +14,7 @@ def input_params():
         "status": "0",
         "filter": {
             "evaltype": "2",
-            "conditions": [
-                {"operator": "2", "conditiontype": "24", "value": "database"}
-            ],
+            "conditions": [{"operator": "2", "conditiontype": "24", "value": "database"}],
         },
         "eventsource": "2",
         "name": "Auto registration Databases",
@@ -115,9 +113,7 @@ def diff_params():
     return {
         "filter": {
             "evaltype": "2",
-            "conditions": [
-                {"operator": "2", "conditiontype": "24", "value": "virtual"}
-            ],
+            "conditions": [{"operator": "2", "conditiontype": "24", "value": "virtual"}],
         },
         "actionid": "28",
     }
@@ -148,24 +144,18 @@ def test_present_create(input_params):
         with patch.dict(
             zabbix_action.__salt__,
             {
-                "zabbix.get_zabbix_id_mapper": MagicMock(
-                    return_value={"action": "actionid"}
-                ),
-                "zabbix.substitute_params": MagicMock(
-                    side_effect=[input_params, False]
-                ),
+                "zabbix.get_zabbix_id_mapper": MagicMock(return_value={"action": "actionid"}),
+                "zabbix.substitute_params": MagicMock(side_effect=[input_params, False]),
                 "zabbix.run_query": MagicMock(side_effect=side_effect_run_query),
                 "zabbix.compare_params": MagicMock(return_value={}),
             },
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Action "{}" created.'.format(name)
+            ret["comment"] = f'Zabbix Action "{name}" created.'
             ret["changes"] = {
                 name: {
-                    "old": 'Zabbix Action "{}" did not exist.'.format(name),
-                    "new": 'Zabbix Action "{}" created according definition.'.format(
-                        name
-                    ),
+                    "old": f'Zabbix Action "{name}" did not exist.',
+                    "new": f'Zabbix Action "{name}" created according definition.',
                 }
             }
             assert zabbix_action.present(name, {}) == ret
@@ -182,12 +172,8 @@ def test_present_exists(input_params, existing_obj):
         with patch.dict(
             zabbix_action.__salt__,
             {
-                "zabbix.get_zabbix_id_mapper": MagicMock(
-                    return_value={"action": "actionid"}
-                ),
-                "zabbix.substitute_params": MagicMock(
-                    side_effect=[input_params, existing_obj]
-                ),
+                "zabbix.get_zabbix_id_mapper": MagicMock(return_value={"action": "actionid"}),
+                "zabbix.substitute_params": MagicMock(side_effect=[input_params, existing_obj]),
                 "zabbix.run_query": MagicMock(return_value=["length of result is 1"]),
                 "zabbix.compare_params": MagicMock(return_value={}),
             },
@@ -195,9 +181,7 @@ def test_present_exists(input_params, existing_obj):
             ret["result"] = True
             ret[
                 "comment"
-            ] = 'Zabbix Action "{}" already exists and corresponds to a definition.'.format(
-                name
-            )
+            ] = f'Zabbix Action "{name}" already exists and corresponds to a definition.'
             assert zabbix_action.present(name, {}) == ret
 
 
@@ -221,9 +205,7 @@ def test_present_update(input_params, existing_obj_diff, diff_params):
         with patch.dict(
             zabbix_action.__salt__,
             {
-                "zabbix.get_zabbix_id_mapper": MagicMock(
-                    return_value={"action": "actionid"}
-                ),
+                "zabbix.get_zabbix_id_mapper": MagicMock(return_value={"action": "actionid"}),
                 "zabbix.substitute_params": MagicMock(
                     side_effect=[input_params, existing_obj_diff]
                 ),
@@ -232,14 +214,14 @@ def test_present_update(input_params, existing_obj_diff, diff_params):
             },
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Action "{}" updated.'.format(name)
+            ret["comment"] = f'Zabbix Action "{name}" updated.'
             ret["changes"] = {
                 name: {
                     "old": (
-                        'Zabbix Action "{}" differed '
-                        "in following parameters: {}".format(name, diff_params)
+                        f'Zabbix Action "{name}" differed '
+                        f"in following parameters: {diff_params}"
                     ),
-                    "new": 'Zabbix Action "{}" fixed.'.format(name),
+                    "new": f'Zabbix Action "{name}" fixed.',
                 }
             }
             assert zabbix_action.present(name, {}) == ret
@@ -257,11 +239,11 @@ def test_absent_test_mode():
             {"zabbix.get_object_id_by_params": MagicMock(return_value=11)},
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Action "{}" would be deleted.'.format(name)
+            ret["comment"] = f'Zabbix Action "{name}" would be deleted.'
             ret["changes"] = {
                 name: {
-                    "old": 'Zabbix Action "{}" exists.'.format(name),
-                    "new": 'Zabbix Action "{}" would be deleted.'.format(name),
+                    "old": f'Zabbix Action "{name}" exists.',
+                    "new": f'Zabbix Action "{name}" would be deleted.',
                 }
             }
             assert zabbix_action.absent(name) == ret
@@ -279,7 +261,7 @@ def test_absent():
             {"zabbix.get_object_id_by_params": MagicMock(return_value=False)},
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Action "{}" does not exist.'.format(name)
+            ret["comment"] = f'Zabbix Action "{name}" does not exist.'
             assert zabbix_action.absent(name) == ret
 
         with patch.dict(
@@ -291,11 +273,11 @@ def test_absent():
                 {"zabbix.run_query": MagicMock(return_value=True)},
             ):
                 ret["result"] = True
-                ret["comment"] = 'Zabbix Action "{}" deleted.'.format(name)
+                ret["comment"] = f'Zabbix Action "{name}" deleted.'
                 ret["changes"] = {
                     name: {
-                        "old": 'Zabbix Action "{}" existed.'.format(name),
-                        "new": 'Zabbix Action "{}" deleted.'.format(name),
+                        "old": f'Zabbix Action "{name}" existed.',
+                        "new": f'Zabbix Action "{name}" deleted.',
                     }
                 }
                 assert zabbix_action.absent(name) == ret

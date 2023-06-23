@@ -2,17 +2,14 @@
     Tests for salt.modules.zabbix
     :codeauthor: Jerzy Drozdz <jerzy.drozdz@jdsieci.pl>
 """
+from unittest.mock import patch
 
 import pytest
-
 import salt.modules.config as config
 import saltext.saltext_zabbix.modules.zabbix as zabbix
 from salt.exceptions import SaltException
-from unittest.mock import patch
 
-GETID_QUERY_RESULT_OK = [
-    {"internal": "0", "flags": "0", "groupid": "11", "name": "Databases"}
-]
+GETID_QUERY_RESULT_OK = [{"internal": "0", "flags": "0", "groupid": "11", "name": "Databases"}]
 GETID_QUERY_RESULT_BAD = [
     {"internal": "0", "flags": "0", "groupid": "11", "name": "Databases"},
     {"another": "object"},
@@ -30,9 +27,7 @@ DEFINED_PARAMS = {
         {"operationtype": 2},
         {
             "operationtype": 4,
-            "opgroup": [
-                {"groupid": {"query_object": "hostgroup", "query_name": "Databases"}}
-            ],
+            "opgroup": [{"groupid": {"query_object": "hostgroup", "query_name": "Databases"}}],
         },
     ],
     "empty_list": [],
@@ -321,9 +316,7 @@ def test__login_getting_empty_parameters_from_config():
         with patch.dict(zabbix.__pillar__, fake_connection_data):
             with pytest.raises(SaltException) as login_exception:
                 zabbix._login()
-                assert (
-                    login_exception.strerror == "URL is probably not correct! ('user')"
-                )
+                assert login_exception.strerror == "URL is probably not correct! ('user')"
 
 
 def test_get_mediatype(conn_args, set_zabbix_version, mock_login):
@@ -360,9 +353,7 @@ def test_get_mediatype(conn_args, set_zabbix_version, mock_login):
     zabbix_version_return_list = ["3.4", "4.4.5"]
     for zabbix_version_return in zabbix_version_return_list:
         set_zabbix_version(zabbix_version_return)
-        patch_query = patch.object(
-            zabbix, "_query", autospec=True, return_value=query_return
-        )
+        patch_query = patch.object(zabbix, "_query", autospec=True, return_value=query_return)
         with patch_query:
             assert zabbix.mediatype_get("10", **conn_args) == module_return
 
@@ -380,9 +371,7 @@ def test_user_create(conn_args, set_zabbix_version, query_return, mock_login):
 
     set_zabbix_version("3.2")
     assert (
-        zabbix.user_create(
-            "james", "password007", "[7, 12]", firstname="James Bond", **conn_args
-        )
+        zabbix.user_create("james", "password007", "[7, 12]", firstname="James Bond", **conn_args)
         == module_return
     )
 
@@ -407,7 +396,6 @@ def test_user_exists(conn_args, set_zabbix_version, query_return, mock_login):
     """
 
     module_return = True
-    # pylint: disable=E8128
     query_return(
         {
             "jsonrpc": "2.0",
@@ -464,7 +452,6 @@ def test_user_get(conn_args, set_zabbix_version, query_return, mock_login):
             "type": "3",
         }
     ]
-    # pylint: disable=E8128
     query_return(
         {
             "jsonrpc": "2.0",
@@ -506,8 +493,7 @@ def test_user_update(conn_args, set_zabbix_version, query_return, mock_login):
     query_return({"jsonrpc": "2.0", "result": {"userids": ["3"]}, "id": 0})
     set_zabbix_version("3.4")
     assert (
-        zabbix.user_update("3", visible_name="James Brown", medias=[], **conn_args)
-        == module_return
+        zabbix.user_update("3", visible_name="James Brown", medias=[], **conn_args) == module_return
     )
 
 
@@ -525,8 +511,7 @@ def test_user_update_v32(conn_args, set_zabbix_version, query_return, mock_login
 
     set_zabbix_version("3.2")
     assert (
-        zabbix.user_update("3", visible_name="James Brown", medias=[], **conn_args)
-        == module_return
+        zabbix.user_update("3", visible_name="James Brown", medias=[], **conn_args) == module_return
     )
 
 
@@ -547,7 +532,6 @@ def test_user_getmedia(conn_args, set_zabbix_version, query_return, mock_login):
             "active": "0",
         }
     ]
-    # pylint: disable=E8128
     query_return(
         {
             "jsonrpc": "2.0",
@@ -590,7 +574,7 @@ def test_user_addmedia(conn_args, set_zabbix_version, query_return, mock_login):
             period="1-7,00:00-24:00",
             sendto="support2@example.com",
             severity="63",
-            **conn_args
+            **conn_args,
         )
         == module_return
     )
@@ -600,9 +584,7 @@ def test_user_addmedia_v40(conn_args, set_zabbix_version, query_return, mock_log
     method = "user.addmedia"
     module_return = {
         "result": False,
-        "comment": "Method '{}' removed in Zabbix 4.0+ use 'user.update'".format(
-            method
-        ),
+        "comment": f"Method '{method}' removed in Zabbix 4.0+ use 'user.update'",
     }
 
     query_return({"jsonrpc": "2.0", "result": {"mediaids": ["2"]}, "id": 0})
@@ -616,7 +598,7 @@ def test_user_addmedia_v40(conn_args, set_zabbix_version, query_return, mock_log
             period="1-7,00:00-24:00",
             sendto="support2@example.com",
             severity="63",
-            **conn_args
+            **conn_args,
         )
         == module_return
     )
@@ -638,9 +620,7 @@ def test_user_deletemedia_v40(conn_args, set_zabbix_version, query_return, mock_
     method = "user.deletemedia"
     module_return = {
         "result": False,
-        "comment": "Method '{}' removed in Zabbix 4.0+ use 'user.update'".format(
-            method
-        ),
+        "comment": f"Method '{method}' removed in Zabbix 4.0+ use 'user.update'",
     }
 
     query_return({"jsonrpc": "2.0", "result": {"mediaids": ["2"]}, "id": 0})
@@ -707,7 +687,6 @@ def test_user_list(conn_args, query_return, mock_login):
             "type": "1",
         },
     ]
-    # pylint: disable=E8128
     query_return(
         {
             "jsonrpc": "2.0",
@@ -924,7 +903,6 @@ def test_usergroup_list(conn_args, query_return, mock_login):
             "users_status": "0",
         },
     ]
-    # pylint: disable=E8128
     query_return(
         {
             "jsonrpc": "2.0",
@@ -1187,9 +1165,7 @@ def test_host_inventory_get(conn_args, query_return, mock_login):
     assert zabbix.host_inventory_get("12345", **conn_args) == module_return
 
 
-def test_host_inventory_get_with_disabled_inventory(
-    conn_args, query_return, mock_login
-):
+def test_host_inventory_get_with_disabled_inventory(conn_args, query_return, mock_login):
     """
     test host_inventory_get with a host with inventory disabled
     """
@@ -1273,13 +1249,9 @@ def test_host_inventory_set(conn_args, mock_login):
 
     module_return = {"hostids": [10258]}
     query_return = {"jsonrpc": "2.0", "result": {"hostids": [10258]}, "id": 0}
-    with patch.object(
-        zabbix, "_query", autospec=True, return_value=query_return
-    ) as mock__query:
+    with patch.object(zabbix, "_query", autospec=True, return_value=query_return) as mock__query:
         assert (
-            zabbix.host_inventory_set(
-                10258, asset_tag="jml3322", type="Xen", **conn_args
-            )
+            zabbix.host_inventory_set(10258, asset_tag="jml3322", type="Xen", **conn_args)
             == module_return
         )
         mock__query.assert_called_with(
@@ -1308,9 +1280,7 @@ def test_host_inventory_set_with_inventory_mode(conn_args, mock_login):
 
     module_return = {"hostids": [10258]}
     query_return = {"jsonrpc": "2.0", "result": {"hostids": [10258]}, "id": 0}
-    with patch.object(
-        zabbix, "_query", autospec=True, return_value=query_return
-    ) as mock__query:
+    with patch.object(zabbix, "_query", autospec=True, return_value=query_return) as mock__query:
         assert (
             zabbix.host_inventory_set(
                 10258, asset_tag="jml3322", type="Xen", inventory_mode="1", **conn_args

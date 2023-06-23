@@ -49,14 +49,14 @@ def present(name, mediatype, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_mediatype_created = "Mediatype {} created.".format(name)
-    comment_mediatype_updated = "Mediatype {} updated.".format(name)
-    comment_mediatype_notcreated = "Unable to create mediatype: {}. ".format(name)
-    comment_mediatype_exists = "Mediatype {} already exists.".format(name)
+    comment_mediatype_created = f"Mediatype {name} created."
+    comment_mediatype_updated = f"Mediatype {name} updated."
+    comment_mediatype_notcreated = f"Unable to create mediatype: {name}. "
+    comment_mediatype_exists = f"Mediatype {name} already exists."
     changes_mediatype_created = {
         name: {
-            "old": "Mediatype {} does not exist.".format(name),
-            "new": "Mediatype {} created.".format(name),
+            "old": f"Mediatype {name} does not exist.",
+            "new": f"Mediatype {name} created.",
         }
     }
 
@@ -122,8 +122,7 @@ def present(name, mediatype, **kwargs):
             and "passwd" in kwargs
         ):
             if (
-                int(kwargs["smtp_authentication"])
-                != int(mediatypeobj["smtp_authentication"])
+                int(kwargs["smtp_authentication"]) != int(mediatypeobj["smtp_authentication"])
                 or kwargs["username"] != mediatypeobj["username"]
                 or kwargs["passwd"] != mediatypeobj["passwd"]
             ):
@@ -214,7 +213,7 @@ def present(name, mediatype, **kwargs):
                     smtp_server=kwargs["smtp_server"],
                     smtp_helo=kwargs["smtp_helo"],
                     smtp_email=kwargs["smtp_email"],
-                    **connection_args
+                    **connection_args,
                 )
                 if "error" in updated_email:
                     error.append(updated_email["error"])
@@ -234,9 +233,7 @@ def present(name, mediatype, **kwargs):
 
             if update_email_security:
                 updated_email_security = __salt__["zabbix.mediatype_update"](
-                    mediatypeid,
-                    smtp_security=kwargs["smtp_security"],
-                    **connection_args
+                    mediatypeid, smtp_security=kwargs["smtp_security"], **connection_args
                 )
                 if "error" in updated_email_security:
                     error.append(updated_email_security["error"])
@@ -245,9 +242,7 @@ def present(name, mediatype, **kwargs):
 
             if update_email_verify_peer:
                 updated_email_verify_peer = __salt__["zabbix.mediatype_update"](
-                    mediatypeid,
-                    smtp_verify_peer=kwargs["smtp_verify_peer"],
-                    **connection_args
+                    mediatypeid, smtp_verify_peer=kwargs["smtp_verify_peer"], **connection_args
                 )
                 if "error" in updated_email_verify_peer:
                     error.append(updated_email_verify_peer["error"])
@@ -256,9 +251,7 @@ def present(name, mediatype, **kwargs):
 
             if update_email_verify_host:
                 updated_email_verify_host = __salt__["zabbix.mediatype_update"](
-                    mediatypeid,
-                    smtp_verify_host=kwargs["smtp_verify_host"],
-                    **connection_args
+                    mediatypeid, smtp_verify_host=kwargs["smtp_verify_host"], **connection_args
                 )
                 if "error" in updated_email_verify_host:
                     error.append(updated_email_verify_host["error"])
@@ -271,22 +264,17 @@ def present(name, mediatype, **kwargs):
                     username=kwargs["username"],
                     passwd=kwargs["passwd"],
                     smtp_authentication=kwargs["smtp_authentication"],
-                    **connection_args
+                    **connection_args,
                 )
                 if "error" in updated_email_auth:
                     error.append(updated_email_auth["error"])
                 else:
-                    ret["changes"]["smtp_authentication"] = kwargs[
-                        "smtp_authentication"
-                    ]
+                    ret["changes"]["smtp_authentication"] = kwargs["smtp_authentication"]
                     ret["changes"]["username"] = kwargs["username"]
 
             if update_script:
                 updated_script = __salt__["zabbix.mediatype_update"](
-                    mediatypeid,
-                    type=mediatype,
-                    exec_path=kwargs["exec_path"],
-                    **connection_args
+                    mediatypeid, type=mediatype, exec_path=kwargs["exec_path"], **connection_args
                 )
                 if "error" in updated_script:
                     error.append(updated_script["error"])
@@ -304,10 +292,7 @@ def present(name, mediatype, **kwargs):
 
             if update_sms:
                 updated_sms = __salt__["zabbix.mediatype_update"](
-                    mediatypeid,
-                    type=mediatype,
-                    gsm_modem=kwargs["gsm_modem"],
-                    **connection_args
+                    mediatypeid, type=mediatype, gsm_modem=kwargs["gsm_modem"], **connection_args
                 )
                 if "error" in updated_sms:
                     error.append(updated_sms["error"])
@@ -320,7 +305,7 @@ def present(name, mediatype, **kwargs):
                     type=mediatype,
                     username=kwargs["username"],
                     passwd=kwargs["passwd"],
-                    **connection_args
+                    **connection_args,
                 )
                 if "error" in updated_jabber:
                     error.append(updated_jabber["error"])
@@ -334,7 +319,7 @@ def present(name, mediatype, **kwargs):
                     username=kwargs["username"],
                     passwd=kwargs["passwd"],
                     exec_path=kwargs["exec_path"],
-                    **connection_args
+                    **connection_args,
                 )
                 if "error" in updated_eztext:
                     error.append(updated_eztext["error"])
@@ -355,9 +340,7 @@ def present(name, mediatype, **kwargs):
             ret["result"] = True
             ret["comment"] = comment_mediatype_exists
     else:
-        mediatype_create = __salt__["zabbix.mediatype_create"](
-            name, mediatype, **kwargs
-        )
+        mediatype_create = __salt__["zabbix.mediatype_create"](name, mediatype, **kwargs)
 
         if "error" not in mediatype_create:
             ret["result"] = True
@@ -365,9 +348,7 @@ def present(name, mediatype, **kwargs):
             ret["changes"] = changes_mediatype_created
         else:
             ret["result"] = False
-            ret["comment"] = comment_mediatype_notcreated + str(
-                mediatype_create["error"]
-            )
+            ret["comment"] = comment_mediatype_notcreated + str(mediatype_create["error"])
 
     # error detected
     if error:
@@ -404,13 +385,13 @@ def absent(name, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_mediatype_deleted = "Mediatype {} deleted.".format(name)
-    comment_mediatype_notdeleted = "Unable to delete mediatype: {}. ".format(name)
-    comment_mediatype_notexists = "Mediatype {} does not exist.".format(name)
+    comment_mediatype_deleted = f"Mediatype {name} deleted."
+    comment_mediatype_notdeleted = f"Unable to delete mediatype: {name}. "
+    comment_mediatype_notexists = f"Mediatype {name} does not exist."
     changes_mediatype_deleted = {
         name: {
-            "old": "Mediatype {} exists.".format(name),
-            "new": "Mediatype {} deleted.".format(name),
+            "old": f"Mediatype {name} exists.",
+            "new": f"Mediatype {name} deleted.",
         }
     }
 
@@ -432,9 +413,7 @@ def absent(name, **kwargs):
     else:
         try:
             mediatypeid = mediatype_exists[0]["mediatypeid"]
-            mediatype_delete = __salt__["zabbix.mediatype_delete"](
-                mediatypeid, **connection_args
-            )
+            mediatype_delete = __salt__["zabbix.mediatype_delete"](mediatypeid, **connection_args)
         except KeyError:
             mediatype_delete = False
 
@@ -444,8 +423,6 @@ def absent(name, **kwargs):
             ret["changes"] = changes_mediatype_deleted
         else:
             ret["result"] = False
-            ret["comment"] = comment_mediatype_notdeleted + str(
-                mediatype_delete["error"]
-            )
+            ret["comment"] = comment_mediatype_notdeleted + str(mediatype_delete["error"])
 
     return ret

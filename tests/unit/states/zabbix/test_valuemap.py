@@ -1,12 +1,12 @@
 """
     :codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
 """
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
-
 import salt.states.zabbix_valuemap as zabbix_valuemap
 import saltext.saltext_zabbix.states.zabbix_valuemap as zabbix_valuemap
-from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture
@@ -83,24 +83,18 @@ def test_present_create(input_params):
         with patch.dict(
             zabbix_valuemap.__salt__,
             {
-                "zabbix.get_zabbix_id_mapper": MagicMock(
-                    return_value={"valuemap": "valuemapid"}
-                ),
-                "zabbix.substitute_params": MagicMock(
-                    side_effect=[input_params, False]
-                ),
+                "zabbix.get_zabbix_id_mapper": MagicMock(return_value={"valuemap": "valuemapid"}),
+                "zabbix.substitute_params": MagicMock(side_effect=[input_params, False]),
                 "zabbix.run_query": MagicMock(side_effect=side_effect_run_query),
                 "zabbix.compare_params": MagicMock(return_value={}),
             },
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Value map "{}" created.'.format(name)
+            ret["comment"] = f'Zabbix Value map "{name}" created.'
             ret["changes"] = {
                 name: {
-                    "old": 'Zabbix Value map "{}" did not exist.'.format(name),
-                    "new": 'Zabbix Value map "{}" created according definition.'.format(
-                        name
-                    ),
+                    "old": f'Zabbix Value map "{name}" did not exist.',
+                    "new": f'Zabbix Value map "{name}" created according definition.',
                 }
             }
             assert zabbix_valuemap.present(name, {}) == ret
@@ -117,12 +111,8 @@ def test_present_exists(input_params, existing_obj):
         with patch.dict(
             zabbix_valuemap.__salt__,
             {
-                "zabbix.get_zabbix_id_mapper": MagicMock(
-                    return_value={"valuemap": "valuemapid"}
-                ),
-                "zabbix.substitute_params": MagicMock(
-                    side_effect=[input_params, existing_obj]
-                ),
+                "zabbix.get_zabbix_id_mapper": MagicMock(return_value={"valuemap": "valuemapid"}),
+                "zabbix.substitute_params": MagicMock(side_effect=[input_params, existing_obj]),
                 "zabbix.run_query": MagicMock(return_value=["length of result is 1"]),
                 "zabbix.compare_params": MagicMock(return_value={}),
             },
@@ -130,9 +120,7 @@ def test_present_exists(input_params, existing_obj):
             ret["result"] = True
             ret[
                 "comment"
-            ] = 'Zabbix Value map "{}" already exists and corresponds to a definition.'.format(
-                name
-            )
+            ] = f'Zabbix Value map "{name}" already exists and corresponds to a definition.'
             assert zabbix_valuemap.present(name, {}) == ret
 
 
@@ -156,9 +144,7 @@ def test_present_update(input_params, existing_obj_diff, diff_params):
         with patch.dict(
             zabbix_valuemap.__salt__,
             {
-                "zabbix.get_zabbix_id_mapper": MagicMock(
-                    return_value={"valuemap": "valuemapid"}
-                ),
+                "zabbix.get_zabbix_id_mapper": MagicMock(return_value={"valuemap": "valuemapid"}),
                 "zabbix.substitute_params": MagicMock(
                     side_effect=[input_params, existing_obj_diff]
                 ),
@@ -167,14 +153,14 @@ def test_present_update(input_params, existing_obj_diff, diff_params):
             },
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Value map "{}" updated.'.format(name)
+            ret["comment"] = f'Zabbix Value map "{name}" updated.'
             ret["changes"] = {
                 name: {
                     "old": (
-                        'Zabbix Value map "{}" differed '
-                        "in following parameters: {}".format(name, diff_params)
+                        f'Zabbix Value map "{name}" differed '
+                        f"in following parameters: {diff_params}"
                     ),
-                    "new": 'Zabbix Value map "{}" fixed.'.format(name),
+                    "new": f'Zabbix Value map "{name}" fixed.',
                 }
             }
             assert zabbix_valuemap.present(name, {}) == ret
@@ -192,11 +178,11 @@ def test_absent_test_mode():
             {"zabbix.get_object_id_by_params": MagicMock(return_value=11)},
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Value map "{}" would be deleted.'.format(name)
+            ret["comment"] = f'Zabbix Value map "{name}" would be deleted.'
             ret["changes"] = {
                 name: {
-                    "old": 'Zabbix Value map "{}" exists.'.format(name),
-                    "new": 'Zabbix Value map "{}" would be deleted.'.format(name),
+                    "old": f'Zabbix Value map "{name}" exists.',
+                    "new": f'Zabbix Value map "{name}" would be deleted.',
                 }
             }
             assert zabbix_valuemap.absent(name) == ret
@@ -214,7 +200,7 @@ def test_absent():
             {"zabbix.get_object_id_by_params": MagicMock(return_value=False)},
         ):
             ret["result"] = True
-            ret["comment"] = 'Zabbix Value map "{}" does not exist.'.format(name)
+            ret["comment"] = f'Zabbix Value map "{name}" does not exist.'
             assert zabbix_valuemap.absent(name) == ret
 
         with patch.dict(
@@ -226,11 +212,11 @@ def test_absent():
                 {"zabbix.run_query": MagicMock(return_value=True)},
             ):
                 ret["result"] = True
-                ret["comment"] = 'Zabbix Value map "{}" deleted.'.format(name)
+                ret["comment"] = f'Zabbix Value map "{name}" deleted.'
                 ret["changes"] = {
                     name: {
-                        "old": 'Zabbix Value map "{}" existed.'.format(name),
-                        "new": 'Zabbix Value map "{}" deleted.'.format(name),
+                        "old": f'Zabbix Value map "{name}" existed.',
+                        "new": f'Zabbix Value map "{name}" deleted.',
                     }
                 }
                 assert zabbix_valuemap.absent(name) == ret

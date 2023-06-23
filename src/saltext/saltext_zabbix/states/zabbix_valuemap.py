@@ -5,7 +5,6 @@ Management of Zabbix Valuemap object over Zabbix API.
 
 :codeauthor: Jakub Sliva <jakub.sliva@ultimum.io>
 """
-
 import json
 import logging
 
@@ -85,9 +84,7 @@ def present(name, params, **kwargs):
         )
 
         if diff_params:
-            diff_params[zabbix_id_mapper["valuemap"]] = existing_obj[
-                zabbix_id_mapper["valuemap"]
-            ]
+            diff_params[zabbix_id_mapper["valuemap"]] = existing_obj[zabbix_id_mapper["valuemap"]]
             log.info(
                 "Zabbix Value map: update params: %s",
                 str(json.dumps(diff_params, indent=4)),
@@ -102,11 +99,7 @@ def present(name, params, **kwargs):
                             'Zabbix Value map "{}" differs '
                             "in following parameters: {}".format(name, diff_params)
                         ),
-                        "new": (
-                            'Zabbix Value map "{}" would correspond to definition.'.format(
-                                name
-                            )
-                        ),
+                        "new": (f'Zabbix Value map "{name}" would correspond to definition.'),
                     }
                 }
             else:
@@ -134,9 +127,7 @@ def present(name, params, **kwargs):
             ret["result"] = True
             ret[
                 "comment"
-            ] = 'Zabbix Value map "{}" already exists and corresponds to a definition.'.format(
-                name
-            )
+            ] = f'Zabbix Value map "{name}" already exists and corresponds to a definition.'
 
     else:
         if dry_run:
@@ -167,11 +158,7 @@ def present(name, params, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Value map "{name}" did not exist.',
-                        "new": (
-                            'Zabbix Value map "{}" created according definition.'.format(
-                                name
-                            )
-                        ),
+                        "new": (f'Zabbix Value map "{name}" created according definition.'),
                     }
                 }
 
@@ -217,9 +204,7 @@ def absent(name, **kwargs):
                 }
             }
         else:
-            valuemap_delete = __salt__["zabbix.run_query"](
-                "valuemap.delete", [object_id], **kwargs
-            )
+            valuemap_delete = __salt__["zabbix.run_query"]("valuemap.delete", [object_id], **kwargs)
 
             if valuemap_delete:
                 ret["result"] = True

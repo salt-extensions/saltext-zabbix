@@ -22,7 +22,6 @@ Support for Zabbix
 
 :codeauthor: Jiri Kotlin <jiri.kotlin@ultimum.io>
 """
-
 import logging
 import os
 import socket
@@ -183,9 +182,7 @@ def _query(method, params, url, auth=None):
         ret = result.get("dict", {})
         if "error" in ret:
             raise SaltException(
-                "Zabbix API: {} ({})".format(
-                    ret["error"]["message"], ret["error"]["data"]
-                )
+                "Zabbix API: {} ({})".format(ret["error"]["message"], ret["error"]["data"])
             )
         return ret
     except ValueError as err:
@@ -230,9 +227,9 @@ def _login(**kwargs):
                     name = name[len(prefix) :]
                 except IndexError:
                     return
-            val = __salt__["config.get"](f"zabbix.{name}", None) or __salt__[
-                "config.get"
-            ](f"zabbix:{name}", None)
+            val = __salt__["config.get"](f"zabbix.{name}", None) or __salt__["config.get"](
+                f"zabbix:{name}", None
+            )
             if val is not None:
                 connargs[key] = val
 
@@ -350,8 +347,7 @@ def substitute_params(input_object, extend_params=None, filter_key="name", **kwa
         extend_params = {}
     if isinstance(input_object, list):
         return [
-            substitute_params(oitem, extend_params, filter_key, **kwargs)
-            for oitem in input_object
+            substitute_params(oitem, extend_params, filter_key, **kwargs) for oitem in input_object
         ]
     elif isinstance(input_object, dict):
         if "query_object" in input_object:
@@ -359,12 +355,8 @@ def substitute_params(input_object, extend_params=None, filter_key="name", **kwa
             if input_object["query_object"] not in ZABBIX_TOP_LEVEL_OBJECTS:
                 query_params.update(extend_params)
             try:
-                query_params.update(
-                    {"filter": {filter_key: input_object["query_name"]}}
-                )
-                return get_object_id_by_params(
-                    input_object["query_object"], query_params, **kwargs
-                )
+                query_params.update({"filter": {filter_key: input_object["query_name"]}})
+                return get_object_id_by_params(input_object["query_object"], query_params, **kwargs)
             except KeyError:
                 raise SaltException(
                     "Qyerying object ID requested "
@@ -711,9 +703,7 @@ def user_get(alias=None, userids=None, **connection_args):
             if not userids and not alias:
                 return {
                     "result": False,
-                    "comment": (
-                        "Please submit alias or userids parameter to retrieve users."
-                    ),
+                    "comment": ("Please submit alias or userids parameter to retrieve users."),
                 }
             if alias:
                 params["filter"].setdefault(username_field, alias)
@@ -847,9 +837,7 @@ def user_getmedia(userids=None, **connection_args):
         return ret
 
 
-def user_addmedia(
-    userids, active, mediatypeid, period, sendto, severity, **connection_args
-):
+def user_addmedia(userids, active, mediatypeid, period, sendto, severity, **connection_args):
     """
     Add new media to multiple users. Available only for Zabbix version 3.4 or older.
 
@@ -884,9 +872,7 @@ def user_addmedia(
     if Version(zabbix_version) > Version("3.4"):
         ret = {
             "result": False,
-            "comment": "Method '{}' removed in Zabbix 4.0+ use 'user.update'".format(
-                method
-            ),
+            "comment": f"Method '{method}' removed in Zabbix 4.0+ use 'user.update'",
         }
         return ret
 
@@ -946,9 +932,7 @@ def user_deletemedia(mediaids, **connection_args):
     if Version(zabbix_version) > Version("3.4"):
         ret = {
             "result": False,
-            "comment": "Method '{}' removed in Zabbix 4.0+ use 'user.update'".format(
-                method
-            ),
+            "comment": f"Method '{method}' removed in Zabbix 4.0+ use 'user.update'",
         }
         return ret
 
@@ -1353,9 +1337,7 @@ def host_delete(hostids, **connection_args):
         return ret
 
 
-def host_exists(
-    host=None, hostid=None, name=None, node=None, nodeids=None, **connection_args
-):
+def host_exists(host=None, hostid=None, name=None, node=None, nodeids=None, **connection_args):
     """
     Checks if at least one host that matches the given filter criteria exists.
 
@@ -1515,9 +1497,7 @@ def host_update(hostid, **connection_args):
             method = "host.update"
             params = {"hostid": hostid}
             if "groups" in connection_args:
-                params["groups"] = _map_to_list_of_dicts(
-                    connection_args.pop("groups"), "groupid"
-                )
+                params["groups"] = _map_to_list_of_dicts(connection_args.pop("groups"), "groupid")
             params = _params_extend(params, _ignore_name=True, **connection_args)
             ret = _query(method, params, conn_args["url"], conn_args["auth"])
             return ret["result"]["hostids"]
@@ -1736,9 +1716,7 @@ def hostgroup_delete(hostgroupids, **connection_args):
         return ret
 
 
-def hostgroup_exists(
-    name=None, groupid=None, node=None, nodeids=None, **connection_args
-):
+def hostgroup_exists(name=None, groupid=None, node=None, nodeids=None, **connection_args):
     """
     Checks if at least one host group that matches the given filter criteria exists.
 

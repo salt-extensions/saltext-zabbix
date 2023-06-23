@@ -5,7 +5,6 @@ Management of Zabbix Template object over Zabbix API.
 
 :codeauthor: Jakub Sliva <jakub.sliva@ultimum.io>
 """
-
 import json
 import logging
 
@@ -296,9 +295,7 @@ def _diff_and_merge_host_list(defined, existing):
         raise SaltException("List of hosts in template not defined correctly.")
 
     diff = defined_host_ids - existing_host_ids
-    return (
-        [{"hostid": str(hostid)} for hostid in diff | existing_host_ids] if diff else []
-    )
+    return [{"hostid": str(hostid)} for hostid in diff | existing_host_ids] if diff else []
 
 
 def _get_existing_template_c_list(component, parent_id, **kwargs):
@@ -314,9 +311,7 @@ def _get_existing_template_c_list(component, parent_id, **kwargs):
     q_params = dict(c_def["output"])
     q_params.update({c_def["qselectpid"]: parent_id})
 
-    existing_clist_all = __salt__["zabbix.run_query"](
-        c_def["qtype"] + ".get", q_params, **kwargs
-    )
+    existing_clist_all = __salt__["zabbix.run_query"](c_def["qtype"] + ".get", q_params, **kwargs)
 
     # in some cases (e.g. templatescreens) the logic is reversed (even name of the flag is different!)
     if c_def["inherited"] == "inherited":
@@ -328,11 +323,7 @@ def _get_existing_template_c_list(component, parent_id, **kwargs):
         existing_clist_inherited = []
 
     if existing_clist_inherited:
-        return [
-            c_all
-            for c_all in existing_clist_all
-            if c_all not in existing_clist_inherited
-        ]
+        return [c_all for c_all in existing_clist_all if c_all not in existing_clist_inherited]
 
     return existing_clist_all
 
@@ -347,14 +338,11 @@ def _adjust_object_lists(obj):
     for subcomp in TEMPLATE_COMPONENT_DEF:
         if subcomp in obj and TEMPLATE_COMPONENT_DEF[subcomp]["adjust"]:
             obj[subcomp] = [
-                item[TEMPLATE_COMPONENT_DEF[subcomp]["qidname"]]
-                for item in obj[subcomp]
+                item[TEMPLATE_COMPONENT_DEF[subcomp]["qidname"]] for item in obj[subcomp]
             ]
 
 
-def _manage_component(
-    component, parent_id, defined, existing, template_id=None, **kwargs
-):
+def _manage_component(component, parent_id, defined, existing, template_id=None, **kwargs):
     """
     Takes particular component list, compares it with existing, call appropriate API methods - create, update, delete.
 
@@ -408,9 +396,7 @@ def _manage_component(
                     "component": component,
                     "action": "create",
                     "params": object_params,
-                    "object_id": "CREATED "
-                    + TEMPLATE_COMPONENT_DEF[component]["qtype"]
-                    + " ID",
+                    "object_id": "CREATED " + TEMPLATE_COMPONENT_DEF[component]["qtype"] + " ID",
                 }
             )
 
@@ -430,12 +416,8 @@ def _manage_component(
             )
 
     for object_name in update_set:
-        ditem = next(
-            (item for item in defined if item[compare_key] == object_name), None
-        )
-        eitem = next(
-            (item for item in existing if item[compare_key] == object_name), None
-        )
+        ditem = next((item for item in defined if item[compare_key] == object_name), None)
+        eitem = next((item for item in existing if item[compare_key] == object_name), None)
         diff_params = __salt__["zabbix.compare_params"](ditem, eitem, True)
 
         if diff_params["new"]:
@@ -670,9 +652,7 @@ def present(name, params, static_host_list=True, **kwargs):
 
     # if a component is not defined, it means to remove existing items during update (empty list)
     for attr in TEMPLATE_RELATIONS:
-        template_definition[attr] = (
-            params[attr] if attr in params and params[attr] else []
-        )
+        template_definition[attr] = params[attr] if attr in params and params[attr] else []
 
     defined_obj = __salt__["zabbix.substitute_params"](template_definition, **kwargs)
     log.info(
@@ -733,9 +713,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 diff_params["new"]["hosts"] = hosts_list
 
         else:
-            diff_params = __salt__["zabbix.compare_params"](
-                defined_obj, existing_obj, True
-            )
+            diff_params = __salt__["zabbix.compare_params"](defined_obj, existing_obj, True)
 
         if diff_params["new"]:
             diff_params["new"][zabbix_id_mapper["template"]] = template_id
@@ -759,13 +737,9 @@ def present(name, params, static_host_list=True, **kwargs):
                 log.info("TEMPLATE update result: %s", str(tmpl_update))
 
     else:
-        CHANGE_STACK.append(
-            {"component": "template", "action": "create", "params": defined_obj}
-        )
+        CHANGE_STACK.append({"component": "template", "action": "create", "params": defined_obj})
         if not dry_run:
-            tmpl_create = __salt__["zabbix.run_query"](
-                "template.create", defined_obj, **kwargs
-            )
+            tmpl_create = __salt__["zabbix.run_query"]("template.create", defined_obj, **kwargs)
             log.info("TEMPLATE create result: %s", str(tmpl_create))
             if tmpl_create:
                 template_id = tmpl_create["templateids"][0]
@@ -781,9 +755,7 @@ def present(name, params, static_host_list=True, **kwargs):
         for component in TEMPLATE_COMPONENT_ORDER:
             log.info("\n\n\n\n\nCOMPONENT: %s\n\n", str(json.dumps(component)))
             # 1) query for components which belongs to the template
-            existing_c_list = _get_existing_template_c_list(
-                component, template_id, **kwargs
-            )
+            existing_c_list = _get_existing_template_c_list(component, template_id, **kwargs)
             existing_c_list_subs = (
                 __salt__["zabbix.substitute_params"](existing_c_list, **kwargs)
                 if existing_c_list
@@ -793,9 +765,7 @@ def present(name, params, static_host_list=True, **kwargs):
             if component in template_components:
                 defined_c_list_subs = __salt__["zabbix.substitute_params"](
                     template_components[component],
-                    extend_params={
-                        TEMPLATE_COMPONENT_DEF[component]["qselectpid"]: template_id
-                    },
+                    extend_params={TEMPLATE_COMPONENT_DEF[component]["qselectpid"]: template_id},
                     filter_key=TEMPLATE_COMPONENT_DEF[component]["filter"],
                     **kwargs,
                 )
@@ -824,18 +794,14 @@ def present(name, params, static_host_list=True, **kwargs):
             q_params.update({c_def["qselectpid"]: template_id})
             q_params.update({"filter": {c_def["filter"]: q_def["filter_val"]}})
 
-            parent_id = __salt__["zabbix.get_object_id_by_params"](
-                q_object, q_params, **kwargs
-            )
+            parent_id = __salt__["zabbix.get_object_id_by_params"](q_object, q_params, **kwargs)
 
             for proto_name in DISCOVERYRULE_COMPONENT_ORDER:
                 log.info(
                     "\n\n\n\n\nPROTOTYPE_NAME: %s\n\n",
                     str(json.dumps(proto_name)),
                 )
-                existing_p_list = _get_existing_template_c_list(
-                    proto_name, parent_id, **kwargs
-                )
+                existing_p_list = _get_existing_template_c_list(proto_name, parent_id, **kwargs)
                 existing_p_list_subs = (
                     __salt__["zabbix.substitute_params"](existing_p_list, **kwargs)
                     if existing_p_list
@@ -867,11 +833,7 @@ def present(name, params, static_host_list=True, **kwargs):
 
     if not CHANGE_STACK:
         ret["result"] = True
-        ret[
-            "comment"
-        ] = 'Zabbix Template "{}" already exists and corresponds to a definition.'.format(
-            name
-        )
+        ret["comment"] = f'Zabbix Template "{name}" already exists and corresponds to a definition.'
     else:
         tmpl_action = next(
             (
@@ -899,11 +861,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Template "{name}" did not exist.',
-                        "new": (
-                            'Zabbix Template "{}" created according definition.'.format(
-                                name
-                            )
-                        ),
+                        "new": (f'Zabbix Template "{name}" created according definition.'),
                     }
                 }
         else:
@@ -924,11 +882,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Template "{name}" differed.',
-                        "new": (
-                            'Zabbix Template "{}" updated according definition.'.format(
-                                name
-                            )
-                        ),
+                        "new": (f'Zabbix Template "{name}" updated according definition.'),
                     }
                 }
 
@@ -974,9 +928,7 @@ def absent(name, **kwargs):
                 }
             }
         else:
-            tmpl_delete = __salt__["zabbix.run_query"](
-                "template.delete", [object_id], **kwargs
-            )
+            tmpl_delete = __salt__["zabbix.run_query"]("template.delete", [object_id], **kwargs)
             if tmpl_delete:
                 ret["result"] = True
                 ret["comment"] = f'Zabbix Template "{name}" deleted.'

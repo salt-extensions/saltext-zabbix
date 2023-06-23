@@ -45,13 +45,13 @@ def present(name, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_hostgroup_created = "Host group {} created.".format(name)
-    comment_hostgroup_notcreated = "Unable to create host group: {}. ".format(name)
-    comment_hostgroup_exists = "Host group {} already exists.".format(name)
+    comment_hostgroup_created = f"Host group {name} created."
+    comment_hostgroup_notcreated = f"Unable to create host group: {name}. "
+    comment_hostgroup_exists = f"Host group {name} already exists."
     changes_hostgroup_created = {
         name: {
-            "old": "Host group {} does not exist.".format(name),
-            "new": "Host group {} created.".format(name),
+            "old": f"Host group {name} does not exist.",
+            "new": f"Host group {name} created.",
         }
     }
 
@@ -80,9 +80,7 @@ def present(name, **kwargs):
             ret["changes"] = changes_hostgroup_created
         else:
             ret["result"] = False
-            ret["comment"] = comment_hostgroup_notcreated + str(
-                hostgroup_create["error"]
-            )
+            ret["comment"] = comment_hostgroup_notcreated + str(hostgroup_create["error"])
 
     return ret
 
@@ -109,13 +107,13 @@ def absent(name, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_hostgroup_deleted = "Host group {} deleted.".format(name)
-    comment_hostgroup_notdeleted = "Unable to delete host group: {}. ".format(name)
-    comment_hostgroup_notexists = "Host group {} does not exist.".format(name)
+    comment_hostgroup_deleted = f"Host group {name} deleted."
+    comment_hostgroup_notdeleted = f"Unable to delete host group: {name}. "
+    comment_hostgroup_notexists = f"Host group {name} does not exist."
     changes_hostgroup_deleted = {
         name: {
-            "old": "Host group {} exists.".format(name),
-            "new": "Host group {} deleted.".format(name),
+            "old": f"Host group {name} exists.",
+            "new": f"Host group {name} deleted.",
         }
     }
 
@@ -148,9 +146,7 @@ def absent(name, **kwargs):
     else:
         try:
             groupid = hostgroup_get[0]["groupid"]
-            hostgroup_delete = __salt__["zabbix.hostgroup_delete"](
-                groupid, **connection_args
-            )
+            hostgroup_delete = __salt__["zabbix.hostgroup_delete"](groupid, **connection_args)
         except KeyError:
             hostgroup_delete = False
 
@@ -160,8 +156,6 @@ def absent(name, **kwargs):
             ret["changes"] = changes_hostgroup_deleted
         else:
             ret["result"] = False
-            ret["comment"] = comment_hostgroup_notdeleted + str(
-                hostgroup_delete["error"]
-            )
+            ret["comment"] = comment_hostgroup_notdeleted + str(hostgroup_delete["error"])
 
     return ret

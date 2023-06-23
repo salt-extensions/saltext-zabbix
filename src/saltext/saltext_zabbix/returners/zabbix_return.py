@@ -15,8 +15,6 @@ To use the Zabbix returner, append '--return zabbix' to the salt command. ex:
 
     salt '*' test.ping --return zabbix
 """
-
-
 import os
 
 # Define the module's virtual name
@@ -47,16 +45,7 @@ def zbx():
 
 
 def zabbix_send(key, output):
-    cmd = (
-        zbx()["sender"]
-        + " -c "
-        + zbx()["config"]
-        + " -k "
-        + key
-        + ' -o "'
-        + output
-        + '"'
-    )
+    cmd = zbx()["sender"] + " -c " + zbx()["config"] + " -k " + key + ' -o "' + output + '"'
     __salt__["cmd.shell"](cmd)
 
 
@@ -77,18 +66,14 @@ def returner(ret):
                 errors = True
                 zabbix_send(
                     "salt.trap.high",
-                    "SALT:\nname: {}\ncomment: {}".format(
-                        item["name"], item["comment"]
-                    ),
+                    "SALT:\nname: {}\ncomment: {}".format(item["name"], item["comment"]),
                 )
             elif "comment" in item and "name" in item and item["changes"]:
                 changes = True
                 zabbix_send(
                     "salt.trap.warning",
-                    "SALT:\nname: {}\ncomment: {}".format(
-                        item["name"], item["comment"]
-                    ),
+                    "SALT:\nname: {}\ncomment: {}".format(item["name"], item["comment"]),
                 )
 
     if not changes and not errors:
-        zabbix_send("salt.trap.info", "SALT {} OK".format(job_minion_id))
+        zabbix_send("salt.trap.info", f"SALT {job_minion_id} OK")

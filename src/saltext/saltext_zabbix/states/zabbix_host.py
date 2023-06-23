@@ -5,7 +5,6 @@ Management of Zabbix hosts.
 
 
 """
-
 from collections.abc import Mapping
 from copy import deepcopy
 
@@ -85,14 +84,14 @@ def present(host, groups, interfaces, **kwargs):
     ret = {"name": host, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_host_created = "Host {} created.".format(host)
-    comment_host_updated = "Host {} updated.".format(host)
-    comment_host_notcreated = "Unable to create host: {}. ".format(host)
-    comment_host_exists = "Host {} already exists.".format(host)
+    comment_host_created = f"Host {host} created."
+    comment_host_updated = f"Host {host} updated."
+    comment_host_notcreated = f"Unable to create host: {host}. "
+    comment_host_exists = f"Host {host} already exists."
     changes_host_created = {
         host: {
-            "old": "Host {} does not exist.".format(host),
-            "new": "Host {} created.".format(host),
+            "old": f"Host {host} does not exist.",
+            "new": f"Host {host} created.",
         }
     }
 
@@ -148,9 +147,7 @@ def present(host, groups, interfaces, **kwargs):
                         val_details.update(detail)
                     details_version = val_details.get("version", "2")
                     details_bulk = val_details.get("bulk", "1")
-                    details_community = val_details.get(
-                        "community", "{$SNMP_COMMUNITY}"
-                    )
+                    details_community = val_details.get("community", "{$SNMP_COMMUNITY}")
                 details = {
                     "version": details_version,
                     "bulk": details_bulk,
@@ -169,9 +166,7 @@ def present(host, groups, interfaces, **kwargs):
                         details["authpassphrase"] = details_authpassphrase
                         details["authprotocol"] = details_authprotocol
                         if int(details_securitylevel) > 1:
-                            details_privpassphrase = val_details.get(
-                                "privpassphrase", ""
-                            )
+                            details_privpassphrase = val_details.get("privpassphrase", "")
                             details_privprotocol = val_details.get("privprotocol", "0")
                             details["privpassphrase"] = details_privpassphrase
                             details["privprotocol"] = details_privprotocol
@@ -190,9 +185,7 @@ def present(host, groups, interfaces, **kwargs):
                 }
             )
 
-        interfaces_list_sorted = sorted(
-            interfaces_list, key=lambda k: k["main"], reverse=True
-        )
+        interfaces_list_sorted = sorted(interfaces_list, key=lambda k: k["main"], reverse=True)
 
         return interfaces_list_sorted
 
@@ -206,7 +199,7 @@ def present(host, groups, interfaces, **kwargs):
             try:
                 groupids.append(int(groupid[0]["groupid"]))
             except TypeError:
-                ret["comment"] = "Invalid group {}".format(group)
+                ret["comment"] = f"Invalid group {group}"
                 return ret
         else:
             groupids.append(group)
@@ -224,23 +217,23 @@ def present(host, groups, interfaces, **kwargs):
                     {
                         "output": "proxyid",
                         "selectInterface": "extend",
-                        "filter": {"host": "{}".format(proxy_host)},
+                        "filter": {"host": f"{proxy_host}"},
                     },
-                    **connection_args
+                    **connection_args,
                 )[0]["proxyid"]
             except TypeError:
-                ret["comment"] = "Invalid proxy_host {}".format(proxy_host)
+                ret["comment"] = f"Invalid proxy_host {proxy_host}"
                 return ret
         # Otherwise lookup proxy_host as proxyid
         else:
             try:
                 proxy_hostid = __salt__["zabbix.run_query"](
                     "proxy.get",
-                    {"proxyids": "{}".format(proxy_host), "output": "proxyid"},
-                    **connection_args
+                    {"proxyids": f"{proxy_host}", "output": "proxyid"},
+                    **connection_args,
                 )[0]["proxyid"]
             except TypeError:
-                ret["comment"] = "Invalid proxy_host {}".format(proxy_host)
+                ret["comment"] = f"Invalid proxy_host {proxy_host}"
                 return ret
 
     # Selects if the current inventory should be substituted by the new one
@@ -319,9 +312,7 @@ def present(host, groups, interfaces, **kwargs):
         if set(groups) != set(cur_hostgroups):
             update_hostgroups = True
 
-        hostinterfaces = __salt__["zabbix.hostinterface_get"](
-            hostids=hostid, **connection_args
-        )
+        hostinterfaces = __salt__["zabbix.hostinterface_get"](hostids=hostid, **connection_args)
 
         if hostinterfaces:
             hostinterfaces = sorted(hostinterfaces, key=lambda k: k["main"])
@@ -342,9 +333,9 @@ def present(host, groups, interfaces, **kwargs):
                         }
                     else:
                         hostintf["details"] = []
-            interface_diff = [
-                x for x in interfaces_formated if x not in hostinterfaces_copy
-            ] + [y for y in hostinterfaces_copy if y not in interfaces_formated]
+            interface_diff = [x for x in interfaces_formated if x not in hostinterfaces_copy] + [
+                y for y in hostinterfaces_copy if y not in interfaces_formated
+            ]
             if interface_diff:
                 update_interfaces = True
 
@@ -354,9 +345,7 @@ def present(host, groups, interfaces, **kwargs):
         # if inventory param is empty leave inventory as is don't compare it
         # if inventory_mode is '-1', the inventory will be erased, why compare it?
         if inventory is not None and inventory_mode != "-1":
-            cur_inventory = __salt__["zabbix.host_inventory_get"](
-                hostids=hostid, **connection_args
-            )
+            cur_inventory = __salt__["zabbix.host_inventory_get"](hostids=hostid, **connection_args)
 
             inventory_diff = salt.utils.dictdiffer.diff(cur_inventory, new_inventory)
             if inventory_diff.changed():
@@ -444,9 +433,7 @@ def present(host, groups, interfaces, **kwargs):
                                 0, interface["interfaceid"]
                             )
                         else:
-                            interfaceid_by_type[interface["type"]].append(
-                                interface["interfaceid"]
-                            )
+                            interfaceid_by_type[interface["type"]].append(interface["interfaceid"])
 
                 def _update_interfaces(interface):
                     if not interfaceid_by_type[interface["type"]]:
@@ -459,7 +446,7 @@ def present(host, groups, interfaces, **kwargs):
                             useip=interface["useip"],
                             port=interface["port"],
                             details=interface["details"],
-                            **connection_args
+                            **connection_args,
                         )
                     else:
                         interfaceid = interfaceid_by_type[interface["type"]].pop(0)
@@ -472,7 +459,7 @@ def present(host, groups, interfaces, **kwargs):
                             useip=interface["useip"],
                             port=interface["port"],
                             details=interface["details"],
-                            **connection_args
+                            **connection_args,
                         )
                     return ret
 
@@ -516,7 +503,7 @@ def present(host, groups, interfaces, **kwargs):
             proxy_hostid=proxy_hostid,
             inventory=new_inventory,
             visible_name=visible_name,
-            **sum_kwargs
+            **sum_kwargs,
         )
 
         if "error" not in host_create:
@@ -556,13 +543,13 @@ def absent(name, **kwargs):
     ret = {"name": name, "changes": {}, "result": False, "comment": ""}
 
     # Comment and change messages
-    comment_host_deleted = "Host {} deleted.".format(name)
-    comment_host_notdeleted = "Unable to delete host: {}. ".format(name)
-    comment_host_notexists = "Host {} does not exist.".format(name)
+    comment_host_deleted = f"Host {name} deleted."
+    comment_host_notdeleted = f"Unable to delete host: {name}. "
+    comment_host_notexists = f"Host {name} does not exist."
     changes_host_deleted = {
         name: {
-            "old": "Host {} exists.".format(name),
-            "new": "Host {} deleted.".format(name),
+            "old": f"Host {name} exists.",
+            "new": f"Host {name} deleted.",
         }
     }
     connection_args = {}
@@ -641,9 +628,7 @@ def assign_templates(host, templates, **kwargs):
 
     # Set comments
     comment_host_templates_updated = "Templates updated."
-    comment_host_templ_notupdated = "Unable to update templates on host: {}.".format(
-        host
-    )
+    comment_host_templ_notupdated = f"Unable to update templates on host: {host}."
     comment_host_templates_in_sync = "Templates already synced."
 
     update_host_templates = False
@@ -670,7 +655,7 @@ def assign_templates(host, templates, **kwargs):
         hostids=hostid,
         output='[{"hostid"}]',
         selectParentTemplates='["templateid"]',
-        **connection_args
+        **connection_args,
     )
     for template_id in host_templates[0]["parentTemplates"]:
         curr_template_ids.append(template_id["templateid"])
@@ -678,13 +663,13 @@ def assign_templates(host, templates, **kwargs):
     # Get requested templateids
     for template in templates:
         try:
-            template_id = __salt__["zabbix.template_get"](
-                host=template, **connection_args
-            )[0]["templateid"]
+            template_id = __salt__["zabbix.template_get"](host=template, **connection_args)[0][
+                "templateid"
+            ]
             requested_template_ids.append(template_id)
         except TypeError:
             ret["result"] = False
-            ret["comment"] = "Unable to find template: {}.".format(template)
+            ret["comment"] = f"Unable to find template: {template}."
             return ret
 
     # remove any duplications
