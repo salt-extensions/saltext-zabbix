@@ -1,13 +1,15 @@
 """
     :codeauthor: Piter Punk <piterpunk@slackware.com>
 """
+
 import ast
 from collections import OrderedDict
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
-import saltext.saltext_zabbix.states.zabbix_host as zabbix_host
+
+import saltext.zabbix.states.zabbix_host as zabbix_host
 
 
 @pytest.fixture
