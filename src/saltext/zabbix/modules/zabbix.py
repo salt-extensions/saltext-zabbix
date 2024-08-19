@@ -22,6 +22,7 @@ Support for Zabbix
 
 :codeauthor: Jiri Kotlin <jiri.kotlin@ultimum.io>
 """
+
 import logging
 import os
 import socket
@@ -176,19 +177,15 @@ def _query(method, params, url, auth=None):
         )
         log.info("_QUERY result: %s", str(result))
         if "error" in result:
-            raise SaltException(
-                "Zabbix API: Status: {} ({})".format(result["status"], result["error"])
-            )
+            raise SaltException(f"Zabbix API: Status: {result['status']} ({result['error']})")
         ret = result.get("dict", {})
         if "error" in ret:
-            raise SaltException(
-                "Zabbix API: {} ({})".format(ret["error"]["message"], ret["error"]["data"])
-            )
+            raise SaltException(f"Zabbix API: {ret['error']['message']} ({ret['error']['data']})")
         return ret
     except ValueError as err:
-        raise SaltException(f"URL or HTTP headers are probably not correct! ({err})")
+        raise SaltException(f"URL or HTTP headers are probably not correct! ({err})") from err
     except OSError as err:
-        raise SaltException(f"Check hostname in URL! ({err})")
+        raise SaltException(f"Check hostname in URL! ({err})") from err
 
 
 def _login(**kwargs):
@@ -253,7 +250,7 @@ def _login(**kwargs):
         else:
             raise KeyError
     except KeyError as err:
-        raise SaltException(f"URL is probably not correct! ({err})")
+        raise SaltException(f"URL is probably not correct! ({err})") from err
 
 
 def _params_extend(params, _ignore_name=False, **kwargs):
@@ -274,9 +271,9 @@ def _params_extend(params, _ignore_name=False, **kwargs):
 
     """
     # extend params value by optional zabbix API parameters
-    for key in kwargs:
+    for key, val in kwargs.items():
         if not key.startswith("_"):
-            params.setdefault(key, kwargs[key])
+            params.setdefault(key, val)
 
     # ignore name parameter passed from Salt state module, use firstname or visible_name instead
     if _ignore_name:
@@ -357,11 +354,10 @@ def substitute_params(input_object, extend_params=None, filter_key="name", **kwa
             try:
                 query_params.update({"filter": {filter_key: input_object["query_name"]}})
                 return get_object_id_by_params(input_object["query_object"], query_params, **kwargs)
-            except KeyError:
+            except KeyError as err:
                 raise SaltException(
-                    "Qyerying object ID requested "
-                    "but object name not provided: {}".format(input_object)
-                )
+                    f"Querying object ID requested but object name not provided: {input_object}"
+                ) from err
         else:
             return {
                 key: substitute_params(val, extend_params, filter_key, **kwargs)
@@ -394,10 +390,8 @@ def compare_params(defined, existing, return_old_value=False):
     # Comparison of data types
     if not isinstance(defined, type(existing)):
         raise SaltException(
-            "Zabbix object comparison failed (data type mismatch). Expecting {}, got"
-            ' {}. Existing value: "{}", defined value: "{}").'.format(
-                type(existing), type(defined), existing, defined
-            )
+            f"Zabbix object comparison failed (data type mismatch). Expecting {type(existing)},"
+            f' got {type(defined)}. Existing value: "{existing}", defined value: "{defined}").'
         )
 
     # Comparison of values
@@ -450,13 +444,11 @@ def compare_params(defined, existing, return_old_value=False):
 
             return {"new": defined, "old": existing} if return_old_value else defined
 
-        except TypeError:
+        except TypeError as err:
             raise SaltException(
-                "Zabbix object comparison failed (data type mismatch). Expecting {},"
-                ' got {}. Existing value: "{}", defined value: "{}").'.format(
-                    type(existing), type(defined), existing, defined
-                )
-            )
+                f"Zabbix object comparison failed (data type mismatch). Expecting {type(existing)},"
+                f' got {type(defined)}. Existing value: "{existing}", defined value: "{defined}").'
+            ) from err
 
 
 def get_object_id_by_params(obj, params=None, **connection_args):
@@ -487,9 +479,7 @@ def get_object_id_by_params(obj, params=None, **connection_args):
     else:
         raise SaltException(
             "Zabbix API: Object does not exist or bad Zabbix user permissions or other"
-            " unexpected result. Called method {} with params {}. Result: {}".format(
-                obj + ".get", params, res
-            )
+            f" unexpected result. Called method {obj}.get with params {params}. Result: {res}"
         )
 
 

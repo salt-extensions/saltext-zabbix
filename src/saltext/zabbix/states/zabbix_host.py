@@ -5,6 +5,7 @@ Management of Zabbix hosts.
 
 
 """
+
 from collections.abc import Mapping
 from copy import deepcopy
 
@@ -285,11 +286,11 @@ def present(host, groups, interfaces, **kwargs):
         update_inventory = False
 
         host_updated_params = {}
-        for param in host_extra_properties:
+        for param, val in host_extra_properties.items():
             if param in host:
-                if host[param] == host_extra_properties[param]:
+                if host[param] == val:
                     continue
-            host_updated_params[param] = host_extra_properties[param]
+            host_updated_params[param] = val
         if host_updated_params:
             update_host = True
 
@@ -480,8 +481,8 @@ def present(host, groups, interfaces, **kwargs):
                         error.append(updatedint["error"])
 
                 # And finally remove the ones that isn't in the host state
-                for interface_type in interfaceid_by_type:
-                    for interfaceid in interfaceid_by_type[interface_type]:
+                for interface_type, ids in interfaceid_by_type.items():
+                    for interfaceid in ids:
                         __salt__["zabbix.hostinterface_delete"](
                             interfaceids=interfaceid, **connection_args
                         )

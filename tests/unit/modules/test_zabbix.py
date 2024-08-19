@@ -2,12 +2,14 @@
     Tests for salt.modules.zabbix
     :codeauthor: Jerzy Drozdz <jerzy.drozdz@jdsieci.pl>
 """
+
 from unittest.mock import patch
 
 import pytest
 import salt.modules.config as config
-import saltext.zabbix.modules.zabbix as zabbix
 from salt.exceptions import SaltException
+
+import saltext.zabbix.modules.zabbix as zabbix
 
 GETID_QUERY_RESULT_OK = [{"internal": "0", "flags": "0", "groupid": "11", "name": "Databases"}]
 GETID_QUERY_RESULT_BAD = [

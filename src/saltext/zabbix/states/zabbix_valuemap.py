@@ -5,6 +5,7 @@ Management of Zabbix Valuemap object over Zabbix API.
 
 :codeauthor: Jakub Sliva <jakub.sliva@ultimum.io>
 """
+
 import json
 import logging
 
@@ -96,10 +97,10 @@ def present(name, params, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": (
-                            'Zabbix Value map "{}" differs '
-                            "in following parameters: {}".format(name, diff_params)
+                            f'Zabbix Value map "{name}" differs '
+                            f"in following parameters: {diff_params}"
                         ),
-                        "new": (f'Zabbix Value map "{name}" would correspond to definition.'),
+                        "new": f'Zabbix Value map "{name}" would correspond to definition.',
                     }
                 }
             else:
@@ -116,8 +117,8 @@ def present(name, params, **kwargs):
                     ret["changes"] = {
                         name: {
                             "old": (
-                                'Zabbix Value map "{}" differed '
-                                "in following parameters: {}".format(name, diff_params)
+                                f'Zabbix Value map "{name}" differed '
+                                f"in following parameters: {diff_params}"
                             ),
                             "new": f'Zabbix Value map "{name}" fixed.',
                         }
@@ -125,9 +126,9 @@ def present(name, params, **kwargs):
 
         else:
             ret["result"] = True
-            ret[
-                "comment"
-            ] = f'Zabbix Value map "{name}" already exists and corresponds to a definition.'
+            ret["comment"] = (
+                f'Zabbix Value map "{name}" already exists and corresponds to a definition.'
+            )
 
     else:
         if dry_run:
@@ -136,10 +137,7 @@ def present(name, params, **kwargs):
             ret["changes"] = {
                 name: {
                     "old": f'Zabbix Value map "{name}" does not exist.',
-                    "new": (
-                        'Zabbix Value map "{}" would be created '
-                        "according definition.".format(name)
-                    ),
+                    "new": f'Zabbix Value map "{name}" would be created according definition.',
                 }
             }
         else:

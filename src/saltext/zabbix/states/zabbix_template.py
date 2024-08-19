@@ -5,6 +5,7 @@ Management of Zabbix Template object over Zabbix API.
 
 :codeauthor: Jakub Sliva <jakub.sliva@ultimum.io>
 """
+
 import json
 import logging
 
@@ -291,8 +292,8 @@ def _diff_and_merge_host_list(defined, existing):
     try:
         defined_host_ids = {host["hostid"] for host in defined}
         existing_host_ids = {host["hostid"] for host in existing}
-    except KeyError:
-        raise SaltException("List of hosts in template not defined correctly.")
+    except KeyError as err:
+        raise SaltException("List of hosts in template not defined correctly.") from err
 
     diff = defined_host_ids - existing_host_ids
     return [{"hostid": str(hostid)} for hostid in diff | existing_host_ids] if diff else []
@@ -335,11 +336,9 @@ def _adjust_object_lists(obj):
 
     :param obj: Zabbix object parameters
     """
-    for subcomp in TEMPLATE_COMPONENT_DEF:
-        if subcomp in obj and TEMPLATE_COMPONENT_DEF[subcomp]["adjust"]:
-            obj[subcomp] = [
-                item[TEMPLATE_COMPONENT_DEF[subcomp]["qidname"]] for item in obj[subcomp]
-            ]
+    for subcomp, defs in TEMPLATE_COMPONENT_DEF.items():
+        if subcomp in obj and defs["adjust"]:
+            obj[subcomp] = [item[defs["qidname"]] for item in obj[subcomp]]
 
 
 def _manage_component(component, parent_id, defined, existing, template_id=None, **kwargs):
@@ -850,10 +849,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Template "{name}" does not exist.',
-                        "new": (
-                            'Zabbix Template "{}" would be created '
-                            "according definition.".format(name)
-                        ),
+                        "new": f'Zabbix Template "{name}" would be created according definition.',
                     }
                 }
             else:
@@ -861,7 +857,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Template "{name}" did not exist.',
-                        "new": (f'Zabbix Template "{name}" created according definition.'),
+                        "new": f'Zabbix Template "{name}" created according definition.',
                     }
                 }
         else:
@@ -871,10 +867,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Template "{name}" differs.',
-                        "new": (
-                            'Zabbix Template "{}" would be updated '
-                            "according definition.".format(name)
-                        ),
+                        "new": f'Zabbix Template "{name}" would be updated according definition.',
                     }
                 }
             else:
@@ -882,7 +875,7 @@ def present(name, params, static_host_list=True, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": f'Zabbix Template "{name}" differed.',
-                        "new": (f'Zabbix Template "{name}" updated according definition.'),
+                        "new": f'Zabbix Template "{name}" updated according definition.',
                     }
                 }
 

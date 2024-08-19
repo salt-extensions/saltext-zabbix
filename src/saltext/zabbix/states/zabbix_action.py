@@ -5,6 +5,7 @@ Management of Zabbix Action object over Zabbix API.
 
 :codeauthor: Jakub Sliva <jakub.sliva@ultimum.io>
 """
+
 import json
 import logging
 
@@ -128,8 +129,8 @@ def present(name, params, **kwargs):
                 ret["changes"] = {
                     name: {
                         "old": (
-                            'Zabbix Action "{}" differs '
-                            "in following parameters: {}".format(name, diff_params)
+                            f'Zabbix Action "{name}" differs '
+                            f"in following parameters: {diff_params}"
                         ),
                         "new": (f'Zabbix Action "{name}" would correspond to definition.'),
                     }
@@ -146,8 +147,8 @@ def present(name, params, **kwargs):
                     ret["changes"] = {
                         name: {
                             "old": (
-                                'Zabbix Action "{}" differed '
-                                "in following parameters: {}".format(name, diff_params)
+                                f'Zabbix Action "{name}" differed '
+                                f"in following parameters: {diff_params}"
                             ),
                             "new": f'Zabbix Action "{name}" fixed.',
                         }
@@ -155,9 +156,9 @@ def present(name, params, **kwargs):
 
         else:
             ret["result"] = True
-            ret[
-                "comment"
-            ] = f'Zabbix Action "{name}" already exists and corresponds to a definition.'
+            ret["comment"] = (
+                f'Zabbix Action "{name}" already exists and corresponds to a definition.'
+            )
 
     else:
         if dry_run:

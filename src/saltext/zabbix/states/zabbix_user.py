@@ -5,6 +5,7 @@ Management of Zabbix users.
 
 
 """
+
 import logging
 from copy import deepcopy
 

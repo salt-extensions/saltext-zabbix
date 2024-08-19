@@ -1,11 +1,13 @@
 """
     :codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
 """
+
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
 import salt.states.zabbix_valuemap as zabbix_valuemap
+
 import saltext.zabbix.states.zabbix_valuemap as zabbix_valuemap
 
 
@@ -118,9 +120,9 @@ def test_present_exists(input_params, existing_obj):
             },
         ):
             ret["result"] = True
-            ret[
-                "comment"
-            ] = f'Zabbix Value map "{name}" already exists and corresponds to a definition.'
+            ret["comment"] = (
+                f'Zabbix Value map "{name}" already exists and corresponds to a definition.'
+            )
             assert zabbix_valuemap.present(name, {}) == ret
 
 

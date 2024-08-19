@@ -1,10 +1,12 @@
 """
     :codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
 """
+
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
+
 import saltext.zabbix.states.zabbix_template as zabbix_template
 
 
