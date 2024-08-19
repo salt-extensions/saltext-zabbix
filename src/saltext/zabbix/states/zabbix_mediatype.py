@@ -20,7 +20,7 @@ def present(name, mediatype, **kwargs):
     Creates new mediatype.
     NOTE: This function accepts all standard mediatype properties: keyword argument names differ depending on your
     zabbix version, see:
-    https://www.zabbix.com/documentation/3.0/manual/api/reference/host/object#host_inventory
+    https://www.zabbix.com/documentation/3.0/manual/api/reference/host/object#host-inventory
 
     :param name: name of the mediatype
     :param _connection_user: Optional - zabbix user (can also be set in opts or pillar, see module's docstring)

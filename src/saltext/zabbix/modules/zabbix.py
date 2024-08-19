@@ -981,7 +981,7 @@ def usergroup_create(name, **connection_args):
         This function accepts all standard user group properties: keyword
         argument names differ depending on your zabbix version, see here__.
 
-        .. __: https://www.zabbix.com/documentation/2.0/manual/appendix/api/usergroup/definitions#user_group
+        .. __: https://www.zabbix.com/documentation/2.0/manual/appendix/api/usergroup/definitions#user-group
 
     :param name: name of the user group
     :param _connection_user: Optional - zabbix user (can also be set in opts or pillar, see module's docstring)
@@ -1172,7 +1172,7 @@ def usergroup_update(usrgrpid, **connection_args):
         This function accepts all standard user group properties: keyword
         argument names differ depending on your zabbix version, see here__.
 
-        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/usergroup/object#user_group
+        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/usergroup/object#user-group
 
     :param usrgrpid: ID of the user group to update.
     :param _connection_user: Optional - zabbix user (can also be set in opts or pillar, see module's docstring)
@@ -1500,7 +1500,7 @@ def host_update(hostid, **connection_args):
 def host_inventory_get(hostids, **connection_args):
     """
     Retrieve host inventory according to the given parameters.
-    See: https://www.zabbix.com/documentation/2.4/manual/api/reference/host/object#host_inventory
+    See: https://www.zabbix.com/documentation/2.4/manual/api/reference/host/object#host-inventory
 
     .. versionadded:: 2019.2.0
 
@@ -1542,7 +1542,7 @@ def host_inventory_set(hostid, **connection_args):
     """
     Update host inventory items
     NOTE: This function accepts all standard host: keyword argument names for inventory
-    see: https://www.zabbix.com/documentation/2.4/manual/api/reference/host/object#host_inventory
+    see: https://www.zabbix.com/documentation/2.4/manual/api/reference/host/object#host-inventory
 
     .. versionadded:: 2019.2.0
 
@@ -1640,7 +1640,7 @@ def hostgroup_create(name, **connection_args):
         This function accepts all standard host group properties: keyword
         argument names differ depending on your zabbix version, see here__.
 
-        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/hostgroup/object#host_group
+        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/hostgroup/object#host-group
 
     :param name: name of the host group
     :param _connection_user: Optional - zabbix user (can also be set in opts or pillar, see module's docstring)
@@ -1836,7 +1836,7 @@ def hostgroup_update(groupid, name=None, **connection_args):
         This function accepts all standard host group properties: keyword
         argument names differ depending on your zabbix version, see here__.
 
-        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/hostgroup/object#host_group
+        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/hostgroup/object#host-group
 
     :param groupid: ID of the host group to update
     :param name: name of the host group
@@ -2069,7 +2069,7 @@ def hostinterface_update(interfaceid, **connection_args):
         This function accepts all standard hostinterface: keyword argument
         names differ depending on your zabbix version, see here__.
 
-        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/hostinterface/object#host_interface
+        .. __: https://www.zabbix.com/documentation/2.4/manual/api/reference/hostinterface/object#host-interface
 
     :param interfaceid: ID of the hostinterface to update
 
