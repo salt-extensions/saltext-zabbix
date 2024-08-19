@@ -26,14 +26,14 @@ except NameError:
     docs_basepath = os.path.abspath(os.path.dirname("."))
 
 addtl_paths = (
-    os.path.join(os.pardir, "src"),  # saltext.ttp itself (for autodoc)
+    os.path.join(os.pardir, "src"),  # saltext.zabbix itself (for autodoc)
     "_ext",  # custom Sphinx extensions
 )
 
 for addtl_path in addtl_paths:
     sys.path.insert(0, os.path.abspath(os.path.join(docs_basepath, addtl_path)))
 
-dist = distribution("saltext.saltext-zabbix")
+dist = distribution("saltext.zabbix")
 
 
 # -- Project information -----------------------------------------------------
@@ -66,7 +66,6 @@ rst_prolog = """
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "furo",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",

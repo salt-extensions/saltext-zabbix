@@ -1,5 +1,5 @@
-Welcome to saltext-zabbix Documentation!
-======================================
+Welcome to zabbix Documentation!
+================================
 
 .. toctree::
   :maxdepth: 2
