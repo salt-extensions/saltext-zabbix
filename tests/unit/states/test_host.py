@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-import saltext.zabbix.states.zabbix_host as zabbix_host
+from saltext.zabbix.states import zabbix_host
 
 
 @pytest.fixture
@@ -718,7 +718,6 @@ def test_ensure_nothing_happens_when_host_is_in_desired_state(
         hostgroup_get_output_up,
     ]
     host_exists_output = True
-    host_create_output = "31337"
 
     ret = {
         "changes": {},
@@ -1531,7 +1530,6 @@ def test_update_inventory_and_restore_inventory_mode(
     ]
     host_exists_output = True
     host_inventory_set_output = {"result": {"hostids": ["31337"]}}
-    host_update_output = "31337"
 
     kwargs["inventory_mode"] = "1"
     inventory = (

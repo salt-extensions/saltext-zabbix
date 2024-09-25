@@ -50,7 +50,7 @@ def zabbix_send(key, output):
     __salt__["cmd.shell"](cmd)
 
 
-def save_load(jid, load, minions=None):
+def save_load(jid, load, minions=None):  # pylint: disable=unused-argument
     """
     Included for API consistency
     """
@@ -61,8 +61,8 @@ def returner(ret):
     errors = False
     job_minion_id = ret["id"]
 
-    if type(ret["return"]) is dict:
-        for state, item in ret["return"].items():
+    if isinstance(ret["return"], dict):
+        for item in ret["return"].values():
             if "comment" in item and "name" in item and item["result"] is False:
                 errors = True
                 zabbix_send(

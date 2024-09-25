@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-import saltext.zabbix.states.zabbix_template as zabbix_template
+from saltext.zabbix.states import zabbix_template
 
 
 @pytest.fixture

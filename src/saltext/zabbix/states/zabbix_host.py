@@ -106,22 +106,22 @@ def present(host, groups, interfaces, **kwargs):
         """
 
         if not interfaces_data:
-            return list()
+            return []
 
         interface_attrs = ("ip", "dns", "main", "type", "useip", "port", "details")
         interfaces_json = salt.utils.json.loads(salt.utils.json.dumps(interfaces_data))
-        interfaces_dict = dict()
+        interfaces_dict = {}
 
         for interface in interfaces_json:
             for intf in interface:
                 intf_name = intf
-                interfaces_dict[intf_name] = dict()
+                interfaces_dict[intf_name] = {}
                 for intf_val in interface[intf]:
                     for key, value in intf_val.items():
                         if key in interface_attrs:
                             interfaces_dict[intf_name][key] = value
 
-        interfaces_list = list()
+        interfaces_list = []
         interface_ports = {
             "agent": ["1", "10050"],
             "snmp": ["2", "161"],
@@ -305,7 +305,7 @@ def present(host, groups, interfaces, **kwargs):
             update_proxy = True
 
         hostgroups = __salt__["zabbix.hostgroup_get"](hostids=hostid, **connection_args)
-        cur_hostgroups = list()
+        cur_hostgroups = []
 
         for hostgroup in hostgroups:
             cur_hostgroups.append(int(hostgroup["groupid"]))
@@ -481,7 +481,7 @@ def present(host, groups, interfaces, **kwargs):
                         error.append(updatedint["error"])
 
                 # And finally remove the ones that isn't in the host state
-                for interface_type, ids in interfaceid_by_type.items():
+                for ids in interfaceid_by_type.values():
                     for interfaceid in ids:
                         __salt__["zabbix.hostinterface_delete"](
                             interfaceids=interfaceid, **connection_args
@@ -633,8 +633,8 @@ def assign_templates(host, templates, **kwargs):
     comment_host_templates_in_sync = "Templates already synced."
 
     update_host_templates = False
-    curr_template_ids = list()
-    requested_template_ids = list()
+    curr_template_ids = []
+    requested_template_ids = []
     hostid = ""
 
     host_exists = __salt__["zabbix.host_exists"](host, **connection_args)
@@ -649,7 +649,7 @@ def assign_templates(host, templates, **kwargs):
     hostid = host_info["hostid"]
 
     if not templates:
-        templates = list()
+        templates = []
 
     # Get current templateids for host
     host_templates = __salt__["zabbix.host_get"](
