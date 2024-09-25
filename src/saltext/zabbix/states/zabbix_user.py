@@ -95,7 +95,7 @@ def admin_password_present(name, password=None, **kwargs):
         try:
             user_get = __salt__["zabbix.user_get"](default_zabbix_user, **connection_args)
         except SaltException as err:
-            if all([x not in str(err) for x in login_error_messages]):
+            if all(x not in str(err) for x in login_error_messages):
                 raise
             user_get = False
         if user_get:
@@ -207,22 +207,22 @@ def present(alias, passwd, usrgrps, medias=None, password_reset=False, **kwargs)
 
         """
         if not medias_data:
-            return list()
+            return []
         medias_json = salt.utils.json.loads(salt.utils.json.dumps(medias_data))
         medias_attr = ("active", "mediatype", "period", "severity", "sendto")
         media_type = {"mail": 1, "jabber": 2, "sms": 3}
         media_severities = ("D", "H", "A", "W", "I", "N")
 
-        medias_dict = dict()
+        medias_dict = {}
         for media in medias_json:
             for med in media:
-                medias_dict[med] = dict()
+                medias_dict[med] = {}
                 for medattr in media[med]:
                     for key, value in medattr.items():
                         if key in medias_attr:
                             medias_dict[med][key] = value
 
-        medias_list = list()
+        medias_list = []
         for key, value in medias_dict.items():
             # Load media values or default values
             active = "0" if str(value.get("active", "true")).lower() == "true" else "1"
@@ -262,7 +262,7 @@ def present(alias, passwd, usrgrps, medias=None, password_reset=False, **kwargs)
         update_medias = False
 
         usergroups = deepcopy(user.get("usrgrps", []))
-        cur_usrgrps = list()
+        cur_usrgrps = []
 
         for usergroup in usergroups:
             cur_usrgrps.append(int(usergroup["usrgrpid"]))
@@ -330,7 +330,7 @@ def present(alias, passwd, usrgrps, medias=None, password_reset=False, **kwargs)
                     if password_reset:
                         ret["changes"]["passwd"] = "updated"
 
-                cur_usrgrps = list()
+                cur_usrgrps = []
                 for usergroup in new_user["usrgrps"]:
                     cur_usrgrps.append(int(usergroup["usrgrpid"]))
 
@@ -346,7 +346,7 @@ def present(alias, passwd, usrgrps, medias=None, password_reset=False, **kwargs)
                         userids=userid, **connection_args
                     )
 
-                    cur_usrgrps = list()
+                    cur_usrgrps = []
                     for usergroup in updated_groups:
                         cur_usrgrps.append(int(usergroup["usrgrpid"]))
 

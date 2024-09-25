@@ -201,7 +201,7 @@ def _login(**kwargs):
     :return: On success connargs dictionary with auth token and frontend url, False on failure.
 
     """
-    connargs = dict()
+    connargs = {}
 
     def _connarg(name, key=None):
         """
@@ -644,9 +644,8 @@ def user_exists(alias, **connection_args):
             # Zabbix 5.4 changed object fields
             params = {"output": "extend", "filter": {username_field: alias}}
             ret = _query(method, params, conn_args["url"], conn_args["auth"])
-            return True if ret["result"] else False
-        else:
-            raise KeyError
+            return bool(ret["result"])
+        raise KeyError
     except KeyError:
         return ret
 
