@@ -3,11 +3,17 @@ Support for Zabbix
 
 :optdepends:    - zabbix server
 
-:configuration: This module is not usable until the zabbix user and zabbix password are specified either in a pillar
+:configuration: This module is not usable until the zabbix user and zabbix password or a zabbix API token are specified either in a pillar
     or in the minion's config file. Zabbix url should be also specified.
 
-    .. code-block:: yaml
+    
 
+    .. code-block:: yaml
+        # API Token Authentication
+        zabbix.token: b8b76db07dc6a16b8b4b4270f3cb1x6f4153b50f2b116577ea45d9d0b30w5b29
+        zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
+        
+        # Password Authentication
         zabbix.user: Admin
         zabbix.password: mypassword
         zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
