@@ -7,6 +7,7 @@ Support for Zabbix
     or in the minion's config file. Zabbix url should be also specified.
 
     .. code-block:: yaml
+
         # API Token Authentication
         zabbix.token: b8b76db07dc6a16b8b4b4270f3cb1x6f4153b50f2b116577ea45d9d0b30w5b29
         zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
