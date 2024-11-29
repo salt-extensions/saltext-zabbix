@@ -242,7 +242,7 @@ def _login(**kwargs):
         connargs["url"] = _frontend_url()
 
     # Prevent key errors as we now support multiple login methods
-    for arg in ["token","user","password"]:
+    for arg in ["token", "user", "password"]:
         if arg not in connargs:
             connargs[arg] = None
 
@@ -250,7 +250,7 @@ def _login(**kwargs):
     username_field = "user"
     zabbix_version = _query("apiinfo.version", {}, connargs["url"])
     if Version(zabbix_version["result"]) > Version("5.2"):
-            username_field = "username"
+        username_field = "username"
 
     try:
         if connargs["token"] and connargs["url"]:
@@ -273,7 +273,7 @@ def _login(**kwargs):
             raise KeyError
     except KeyError as err:
         raise SaltException(
-                f"URL is probably not correct, or no credentials provided! ({err})"
+            f"URL is probably not correct, or no credentials provided! ({err})"
         ) from err
 
 
