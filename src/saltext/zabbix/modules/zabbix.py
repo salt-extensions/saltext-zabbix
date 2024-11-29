@@ -261,7 +261,9 @@ def _login(**kwargs):
             connargs.pop("token", None)
             return connargs
         elif connargs["user"] and connargs["password"] and connargs["url"]:
-            params = {"username": connargs["user"], "password": connargs["password"]}
+            params = {}
+            params[username_field] = connargs["user"]
+            params["password"] = connargs["password"]
             method = "user.login"
             ret = _query(method, params, connargs["url"])
             auth = ret["result"]
