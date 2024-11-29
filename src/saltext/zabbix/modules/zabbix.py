@@ -6,18 +6,14 @@ Support for Zabbix
 :configuration: This module is not usable until the zabbix user and zabbix password or a zabbix API token are specified either in a pillar
     or in the minion's config file. Zabbix url should be also specified.
 
-    
-
     .. code-block:: yaml
         # API Token Authentication
         zabbix.token: b8b76db07dc6a16b8b4b4270f3cb1x6f4153b50f2b116577ea45d9d0b30w5b29
         zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
-        
         # Password Authentication
         zabbix.user: Admin
         zabbix.password: mypassword
         zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
-
 
     Connection arguments from the minion config file can be overridden on the CLI by using arguments with
     ``_connection_`` prefix.
@@ -236,7 +232,7 @@ def _login(**kwargs):
             )
             if val is not None:
                 connargs[key] = val
-                
+
     _connarg("_connection_token", "token")
     _connarg("_connection_user", "user")
     _connarg("_connection_password", "password")
@@ -246,15 +242,15 @@ def _login(**kwargs):
         connargs["url"] = _frontend_url()
 
     # Prevent key errors as we now support multiple login methods
-    for arg in ['token','user','password']:
+    for arg in ["token","user","password"]:
         if arg not in connargs:
             connargs[arg] = None
 
     # Login method was changed in version Zabbix 5.2
-    username_field = 'user'
+    username_field = "user"
     zabbix_version = _query("apiinfo.version", {}, connargs["url"])
-    if Version(zabbix_version['result']) > Version("5.2"):
-            username_field = 'username'
+    if Version(zabbix_version["result"]) > Version("5.2"):
+            username_field = "username"
 
     try:
         if connargs["token"] and connargs["url"]:
@@ -276,7 +272,9 @@ def _login(**kwargs):
         else:
             raise KeyError
     except KeyError as err:
-        raise SaltException(f"URL is probably not correct, or no credentials provided! ({err})") from err
+        raise SaltException(
+                f"URL is probably not correct, or no credentials provided! ({err})"
+        ) from err
 
 
 def _params_extend(params, _ignore_name=False, **kwargs):
