@@ -165,6 +165,7 @@ def _query(method, params, url, auth=None):
 
     if method not in unauthenticated_methods:
         data["auth"] = auth
+        header_dict["Authorization"] = "Bearer " + auth
 
     data = salt.utils.json.dumps(data)
 
