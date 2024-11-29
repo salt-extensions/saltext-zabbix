@@ -3,15 +3,18 @@ Support for Zabbix
 
 :optdepends:    - zabbix server
 
-:configuration: This module is not usable until the zabbix user and zabbix password are specified either in a pillar
+:configuration: This module is not usable until the zabbix user and zabbix password or a zabbix API token are specified either in a pillar
     or in the minion's config file. Zabbix url should be also specified.
 
     .. code-block:: yaml
 
+        # API Token Authentication
+        zabbix.token: b8b76db07dc6a16b8b4b4270f3cb1x6f4153b50f2b116577ea45d9d0b30w5b29
+        zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
+        # Password Authentication
         zabbix.user: Admin
         zabbix.password: mypassword
         zabbix.url: http://127.0.0.1/zabbix/api_jsonrpc.php
-
 
     Connection arguments from the minion config file can be overridden on the CLI by using arguments with
     ``_connection_`` prefix.
@@ -159,6 +162,7 @@ def _query(method, params, url, auth=None):
 
     if method not in unauthenticated_methods:
         data["auth"] = auth
+        header_dict["Authorization"] = "Bearer " + auth
 
     data = salt.utils.json.dumps(data)
 
@@ -230,6 +234,7 @@ def _login(**kwargs):
             if val is not None:
                 connargs[key] = val
 
+    _connarg("_connection_token", "token")
     _connarg("_connection_user", "user")
     _connarg("_connection_password", "password")
     _connarg("_connection_url", "url")
@@ -237,20 +242,42 @@ def _login(**kwargs):
     if "url" not in connargs:
         connargs["url"] = _frontend_url()
 
+    # Prevent key errors as we now support multiple login methods
+    for arg in ["token", "user", "password"]:
+        if arg not in connargs:
+            connargs[arg] = None
+
+    # Login method was changed in version Zabbix 5.2
+    username_field = "user"
+    zabbix_version = _query("apiinfo.version", {}, connargs["url"])
+    if Version(zabbix_version["result"]) > Version("5.2"):
+        username_field = "username"
+
     try:
-        if connargs["user"] and connargs["password"] and connargs["url"]:
-            params = {"user": connargs["user"], "password": connargs["password"]}
+        if connargs["token"] and connargs["url"]:
+            connargs["auth"] = connargs["token"]
+            connargs.pop("user", None)
+            connargs.pop("password", None)
+            connargs.pop("token", None)
+            return connargs
+        elif connargs["user"] and connargs["password"] and connargs["url"]:
+            params = {}
+            params[username_field] = connargs["user"]
+            params["password"] = connargs["password"]
             method = "user.login"
             ret = _query(method, params, connargs["url"])
             auth = ret["result"]
             connargs["auth"] = auth
             connargs.pop("user", None)
             connargs.pop("password", None)
+            connargs.pop("token", None)
             return connargs
         else:
             raise KeyError
     except KeyError as err:
-        raise SaltException(f"URL is probably not correct! ({err})") from err
+        raise SaltException(
+            f"URL is probably not correct, or no credentials provided! ({err})"
+        ) from err
 
 
 def _params_extend(params, _ignore_name=False, **kwargs):
