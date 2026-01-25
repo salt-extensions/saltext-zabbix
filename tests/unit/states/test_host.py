@@ -1,5 +1,5 @@
 """
-    :codeauthor: Piter Punk <piterpunk@slackware.com>
+:codeauthor: Piter Punk <piterpunk@slackware.com>
 """
 
 import ast

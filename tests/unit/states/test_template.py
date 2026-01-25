@@ -1,5 +1,5 @@
 """
-    :codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
+:codeauthor: :email:`Jakub Sliva <jakub.sliva@ultimum.io>`
 """
 
 from unittest.mock import MagicMock

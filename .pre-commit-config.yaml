@@ -2,7 +2,7 @@
 minimum_pre_commit_version: 2.4.0
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # v6.0.0
     hooks:
       - id: check-merge-conflict   # Check for files that contain merge conflict strings.
         args: [--assume-in-merge]
@@ -56,7 +56,7 @@ repos:
         args: [--silent, -E, fix_docstrings]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: 32151ac97cbfd7f9dcd22e49516fb32266db45b4  # v3.16.0
+    rev: 37bfa06d791fd38fb4e54910b36a2ff57641b074  # v3.20.0
     hooks:
       - id: pyupgrade
         name: Rewrite Code to be Py3.9+
@@ -66,7 +66,7 @@ repos:
         exclude: src/saltext/zabbix/version.py
 
   - repo: https://github.com/PyCQA/isort
-    rev: c235f5e450b4b84e58d114ed4c589cbf454175a3  # 5.13.2
+    rev: c8ab4a5b21bac924d106e3103dd7c979fdd0f9bc  # 6.0.1
     hooks:
       - id: isort
         args: [
@@ -75,25 +75,25 @@ repos:
         exclude: src/saltext/zabbix/(__init__|version).py
 
   - repo: https://github.com/psf/black
-    rev: 1b2427a2b785cc4aac97c19bb4b9a0de063f9547  # 24.10.0
+    rev: 8a737e727ac5ab2f1d4cf5876720ed276dc8dc4b  # 25.1.0
     hooks:
       - id: black
         args: [-l 100]
         exclude: src/saltext/zabbix/version.py
 
   - repo: https://github.com/adamchainz/blacken-docs
-    rev: 78a9dcbecf4f755f65d1f3dec556bc249d723600  # 1.19.1
+    rev: dda8db18cfc68df532abf33b185ecd12d5b7b326  # 1.20.0
     hooks:
       - id: blacken-docs
         args: [--skip-errors]
         files: ^(docs/.*\.rst|src/saltext/zabbix/.*\.py)$
         additional_dependencies:
-          - black==24.10.0
+          - black==25.1.0
   # <---- Formatting -----------------------------------------------------------------------------
 
   # ----- Security ------------------------------------------------------------------------------>
   - repo: https://github.com/PyCQA/bandit
-    rev: 36fd65054fc8864b4037d0918904f9331512feb5  # 1.7.10
+    rev: 2d0b675b04c80ae42277e10500db06a0a37bae17  # 1.8.6
     hooks:
       - id: bandit
         alias: bandit-salt
@@ -102,7 +102,7 @@ repos:
         exclude: src/saltext/zabbix/version.py
 
   - repo: https://github.com/PyCQA/bandit
-    rev: 36fd65054fc8864b4037d0918904f9331512feb5  # 1.7.10
+    rev: 2d0b675b04c80ae42277e10500db06a0a37bae17  # 1.8.6
     hooks:
       - id: bandit
         alias: bandit-tests
@@ -123,8 +123,8 @@ repos:
         files: ^((setup|noxfile)|src/.*)\.py$
         require_serial: true
         additional_dependencies:
-          - nox==2024.10.9
-          - uv==0.4.29  # Makes this hook much faster
+          - nox==2025.5.1
+          - uv==0.8.18  # Makes this hook much faster
 
       - id: nox
         alias: lint-tests
@@ -134,13 +134,13 @@ repos:
         files: ^tests/.*\.py$
         require_serial: true
         additional_dependencies:
-          - nox==2024.10.9
-          - uv==0.4.29  # Makes this hook much faster
+          - nox==2025.5.1
+          - uv==0.8.18  # Makes this hook much faster
 
   - repo: https://github.com/Mateusz-Grzelinski/actionlint-py
-    rev: 27445053da613c660ed5895d9616662059a53ca7  # v1.7.3.17
+    rev: f999ae59ac949d9b57aaa5569c2d60eb846b3a00  # v1.7.7.24
     hooks:
       - id: actionlint
         additional_dependencies:
-          - shellcheck-py==0.10.0.1
+          - shellcheck-py==0.11.0.1
   # <---- Code Analysis --------------------------------------------------------------------------
