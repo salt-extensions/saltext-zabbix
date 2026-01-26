@@ -1,6 +1,6 @@
 """
-    Tests for salt.modules.zabbix
-    :codeauthor: Jerzy Drozdz <jerzy.drozdz@jdsieci.pl>
+Tests for salt.modules.zabbix
+:codeauthor: Jerzy Drozdz <jerzy.drozdz@jdsieci.pl>
 """
 
 from unittest.mock import patch
