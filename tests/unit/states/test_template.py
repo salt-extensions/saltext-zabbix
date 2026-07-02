@@ -146,7 +146,7 @@ def test_present_create(substitute_params_create):
     """
     Test to ensure that named template is created
     """
-    with patch("salt.states.zabbix_template.CHANGE_STACK", []):
+    with patch("saltext.zabbix.states.zabbix_template.CHANGE_STACK", []):
         name = "A Testing Template"
         ret = {"name": name, "result": False, "comment": "", "changes": {}}
 
@@ -188,7 +188,7 @@ def test_present_exists(existing_obj, substitute_params_exists):
     """
     Test to ensure that named template is present and not changed
     """
-    with patch("salt.states.zabbix_template.CHANGE_STACK", []):
+    with patch("saltext.zabbix.states.zabbix_template.CHANGE_STACK", []):
         name = "A Testing Template"
         ret = {"name": name, "result": False, "comment": "", "changes": {}}
 
@@ -224,7 +224,7 @@ def test_present_update(diff_params, substitute_params_update):
     """
     Test to ensure that named template is present but must be updated
     """
-    with patch("salt.states.zabbix_template.CHANGE_STACK", []):
+    with patch("saltext.zabbix.states.zabbix_template.CHANGE_STACK", []):
         name = "A Testing Template"
         ret = {"name": name, "result": False, "comment": "", "changes": {}}
 
